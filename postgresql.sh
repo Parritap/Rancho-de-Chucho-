@@ -1,4 +1,5 @@
 #!/bin/bash
+docker pull postgres
 docker run -d --name postgres \
   -e POSTGRES_USER=user \
   -e POSTGRES_PASSWORD=apollo \
