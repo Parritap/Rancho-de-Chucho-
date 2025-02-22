@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @NoArgsConstructor
 
-public class PedidoPlatoID {
-    private int idPedido;
+public class OrdenPlatoID {
+    private int idOrden;
     private int idPlato;
 }

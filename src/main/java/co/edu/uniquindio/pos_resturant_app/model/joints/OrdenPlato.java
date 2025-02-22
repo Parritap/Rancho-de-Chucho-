@@ -1,9 +1,9 @@
-package co.edu.uniquindio.pos_resturant_app.model;
+package co.edu.uniquindio.pos_resturant_app.model.joints;
 
+import co.edu.uniquindio.pos_resturant_app.model.Orden;
+import co.edu.uniquindio.pos_resturant_app.model.Plato;
 import co.edu.uniquindio.pos_resturant_app.model.keys.OrdenPlatoID;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,9 +14,24 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 @Setter
-@Table(name = "pedido_plato")
+@Table(name = "orden_plato")
 public class OrdenPlato implements Serializable {
 
-    @Embedded
+    @EmbeddedId
     private OrdenPlatoID id;
+
+    @ManyToOne
+    @MapsId("idOrden")  // Links idPedido from PedidoPlatoId
+    @JoinColumn(name = "id_orden", nullable = false)
+    private Orden orden;
+
+
+    @ManyToOne
+    @MapsId("idPlato")  // Links idPedido from PedidoPlatoId
+    @JoinColumn(name = "id_plato", nullable = false)
+    private Plato plato;
+
+    @Column(nullable = false)
+    private int cantidad;
+
 }
