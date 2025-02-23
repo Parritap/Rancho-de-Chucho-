@@ -25,4 +25,6 @@ public abstract class Usuario implements Serializable {
     private String username;
     @Column (nullable = false)
     private String password;
+    @Column (name = "img_url")
+    private String imgURL;
 }
