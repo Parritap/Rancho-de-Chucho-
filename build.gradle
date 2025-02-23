@@ -28,7 +28,10 @@ dependencies {
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+    // Important for value validation.
+    implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final'
 }
+
 
 tasks.named('test') {
     useJUnitPlatform()
