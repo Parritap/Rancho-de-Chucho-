@@ -1,0 +1,33 @@
+package co.edu.uniquindio.pos_resturant_app.model;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import java.io.Serializable;
+import java.util.List;
+
+@Entity
+@NoArgsConstructor
+@Getter
+@Setter
+@SuperBuilder
+public class TipoPlato implements Serializable {
+
+    @Id
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    private int id_tipo_plato;
+
+    @Column ( nullable = false)
+    private String nombre;
+
+    private String descripcion;
+
+    @OneToMany (mappedBy = "tipoPlato")
+    private List<Plato> listaPlatos;
+
+    @ManyToOne
+    @JoinColumn (name = "tipo_padre", referencedColumnName = "id_tipo_plato", nullable = false)
+    private TipoPlato tipoPadre;
+
+}
