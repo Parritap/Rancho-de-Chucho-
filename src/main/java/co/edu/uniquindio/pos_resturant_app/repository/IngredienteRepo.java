@@ -1,4 +1,4 @@
-package repository;
+package co.edu.uniquindio.pos_resturant_app.repository;
 
 import co.edu.uniquindio.pos_resturant_app.model.Ingrediente;
 import jakarta.persistence.criteria.CriteriaBuilder;

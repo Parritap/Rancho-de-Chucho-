@@ -1,4 +1,4 @@
-package repository.joints;
+package co.edu.uniquindio.pos_resturant_app.repository.joints;
 
 import co.edu.uniquindio.pos_resturant_app.model.joints.OrdenPlato;
 import co.edu.uniquindio.pos_resturant_app.model.keys.OrdenPlatoID;

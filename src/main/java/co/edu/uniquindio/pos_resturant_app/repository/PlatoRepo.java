@@ -1,4 +1,4 @@
-package repository;
+package co.edu.uniquindio.pos_resturant_app.repository;
 
 import co.edu.uniquindio.pos_resturant_app.model.Plato;
 import org.springframework.data.jpa.repository.JpaRepository;
