@@ -1,4 +1,4 @@
-package co.edu.uniquindio.pos_resturant_app.services;
+package co.edu.uniquindio.pos_resturant_app.services.specifications;
 
 import co.edu.uniquindio.pos_resturant_app.dto.ingrediente.IngredienteCreateDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.ingrediente.IngredienteReadDTO;
