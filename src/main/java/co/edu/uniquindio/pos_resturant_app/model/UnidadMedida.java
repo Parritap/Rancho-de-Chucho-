@@ -6,10 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
@@ -32,4 +29,7 @@ public class UnidadMedida implements Serializable {
 
     @OneToMany (mappedBy = "unidadMedida")
     private List<Ingrediente> listaIngredientes;
+
+
+
 }
