@@ -27,7 +27,7 @@ public class IngredienteTests {
     }
 
     @Test
-    void entityCreationTest() {
+    public void entityCreationTest() {
         UnidadMedida kg = UnidadMedida.builder().notacion("kg").nombre("Kilogramos").build();
         UnidadMedida gr = UnidadMedida.builder().notacion("gr").nombre("Gramos").build();
         UnidadMedida lt = UnidadMedida.builder().notacion("lt").nombre("Litros").build();
