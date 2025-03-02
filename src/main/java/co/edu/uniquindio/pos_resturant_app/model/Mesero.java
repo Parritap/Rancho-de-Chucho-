@@ -1,6 +1,7 @@
 package co.edu.uniquindio.pos_resturant_app.model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,6 +18,7 @@ import java.util.List;
 public class Mesero extends Usuario implements Serializable {
 
     @Column (nullable = false)
+    @Builder.Default
     private Boolean enTurno = false;
 
     @OneToMany(mappedBy = "mesero")

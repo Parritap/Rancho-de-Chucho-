@@ -66,7 +66,7 @@ public class IngredienteServiceImp implements IngredienteService {
     @Override
     public boolean editStock(String id, int cantidad) throws Exception {
         var ingrediente = ingredienteRepo.findById(Integer.parseInt(id)).orElseThrow(() -> new Exception("Ingrediente no encontrado"));
-        ingrediente.setCantidadDisponible(ingrediente.getCantidadDisponible() + cantidad);
+        ingrediente.setCantidadDisponible(cantidad);
         ingredienteRepo.save(ingrediente);
         return true;
     }

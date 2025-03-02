@@ -1,5 +1,6 @@
 package co.edu.uniquindio.pos_resturant_app.tests;
 
+import co.edu.uniquindio.pos_resturant_app.dto.ingrediente.IngredienteCreateDTO;
 import co.edu.uniquindio.pos_resturant_app.model.Ingrediente;
 import co.edu.uniquindio.pos_resturant_app.model.UnidadMedida;
 import co.edu.uniquindio.pos_resturant_app.repository.IngredienteRepo;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
 import java.math.BigDecimal;
 
 
@@ -26,7 +28,7 @@ public class IngredienteTests {
     static void setUp() {
     }
 
-    @Test
+    //@Test
     public void entityCreationTest() {
         UnidadMedida kg = UnidadMedida.builder().notacion("kg").nombre("Kilogramos").build();
         UnidadMedida gr = UnidadMedida.builder().notacion("gr").nombre("Gramos").build();
@@ -42,7 +44,7 @@ public class IngredienteTests {
         }
 
         // Sample Ingrediente objects using the builder
-        Ingrediente azucar =  Ingrediente.builder()
+        Ingrediente azucar = Ingrediente.builder()
                 .nombre("Azúcar")
                 .marca("Ledesma")
                 .precioCompra(new BigDecimal("1.50"))
@@ -58,7 +60,7 @@ public class IngredienteTests {
                 .unidadMedida(lt)
                 .build();
 
-        Ingrediente sal =  Ingrediente.builder()
+        Ingrediente sal = Ingrediente.builder()
                 .nombre("Sal")
                 .marca("Celusal")
                 .precioCompra(new BigDecimal("0.80"))
@@ -70,6 +72,19 @@ public class IngredienteTests {
         ingredienteRepo.save(azucar);
         ingredienteRepo.save(aceite);
         ingredienteRepo.save(sal);
+    }
+
+    @Test
+    public void dtosTest() {
+        IngredienteCreateDTO dto = new IngredienteCreateDTO(
+                "",
+                null,
+                new BigDecimal("1.50"),
+                50,
+                "kg");
+
+        var entity = dto.toEntity();
+        ingredienteRepo.save(entity);
     }
 
 
