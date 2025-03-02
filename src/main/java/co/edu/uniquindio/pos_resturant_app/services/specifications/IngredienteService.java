@@ -10,9 +10,15 @@ public interface IngredienteService {
 
     public int create(IngredienteCreateDTO ingrediente) throws Exception;
 
-    public boolean update(IngredienteReadDTO ingrediente) throws Exception;
+    public boolean update(IngredienteCreateDTO ingrediente, int id) throws Exception;
 
-    public void delete(String id) throws Exception;
+    /**
+     *
+     * @param id id of the ingredient to be deleted
+     * @return true if deleted successfully, false if the ingredient was not found
+     * @throws Exception
+     */
+    public boolean delete(String id) throws Exception;
 
     //
     public IngredienteCreateDTO findById(String id) throws Exception;

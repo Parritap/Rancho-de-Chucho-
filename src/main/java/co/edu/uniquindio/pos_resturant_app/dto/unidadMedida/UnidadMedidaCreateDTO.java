@@ -23,4 +23,12 @@ public record UnidadMedidaCreateDTO(
                 .nombre(nombre)
                 .build();
     }
+
+    @Override
+    public String toJSON() {
+        return "{" +
+                "\"notacion\":\"" + notacion + '\"' +
+                ", \"nombre\":\"" + nombre + '\"' +
+                '}';
+    }
 }

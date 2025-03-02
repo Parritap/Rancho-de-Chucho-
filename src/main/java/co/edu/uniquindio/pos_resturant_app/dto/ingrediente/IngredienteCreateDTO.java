@@ -29,4 +29,17 @@ public record IngredienteCreateDTO(
                 .cantidadDisponible(cantidadDisponible)
                 .build();
     }
+
+    @Override
+    public String toJSON() {
+        return "{" +
+                "\"nombre\":\"" + nombre + '\"' +
+                ", \"marca\":\"" + marca + '\"' +
+                ", \"precioCompra\":" + precioCompra +
+                ", \"cantidadDisponible\":" + cantidadDisponible +
+                ", \"unidad_medida\":\"" + unidad_medida + '\"' +
+                '}';
+    }
+
+
 }

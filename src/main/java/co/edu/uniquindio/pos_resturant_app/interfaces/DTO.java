@@ -5,4 +5,5 @@ import java.lang.reflect.Field;
 
 public interface DTO <T> {
      T toEntity();
+     String toJSON();
 }

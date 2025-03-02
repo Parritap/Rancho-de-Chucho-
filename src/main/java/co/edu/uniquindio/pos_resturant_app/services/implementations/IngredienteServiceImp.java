@@ -3,6 +3,7 @@ package co.edu.uniquindio.pos_resturant_app.services.implementations;
 
 import co.edu.uniquindio.pos_resturant_app.dto.ingrediente.IngredienteCreateDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.ingrediente.IngredienteReadDTO;
+import co.edu.uniquindio.pos_resturant_app.exceptions.RecordNotFoundException;
 import co.edu.uniquindio.pos_resturant_app.repository.IngredienteRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.UnidadMedidaRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.UsuarioRepo;
@@ -25,23 +26,32 @@ public class IngredienteServiceImp implements IngredienteService {
     private final UnidadMedidaRepo unidadMedidaRepo;
 
 
+    /**
+     * Method to create a new Ingrediente
+     *
+     * @param dto
+     * @return the id of the created Ingrediente.
+     * @throws RecordNotFoundException if the the specified UnidadMedida in the DTO does not exist.
+     */
     @Override
     public int create(IngredienteCreateDTO dto) throws Exception {
         var entity = dto.toEntity();
-        entity.setUnidadMedida(unidadMedidaRepo.findById(dto.unidad_medida()).orElseThrow(() -> new Exception("Unidad de medida no encontrada")));
+        entity.setUnidadMedida(unidadMedidaRepo.findById(dto.unidad_medida()).orElseThrow(() ->
+                new RecordNotFoundException("UNIDAD MEDIDA")));
         return ingredienteRepo.save(entity).getId();
     }
 
     @Override
-    public boolean update(IngredienteReadDTO dto) throws Exception {
-        var entityOptional = ingredienteRepo.findById(dto.id());
+    public boolean update(IngredienteCreateDTO dto, int id) throws RecordNotFoundException {
+        var entityOptional = ingredienteRepo.findById(id);
         if (entityOptional.isPresent()) {
             var ingrediente = entityOptional.get();
             ingrediente.setNombre(dto.nombre());
             ingrediente.setMarca(dto.marca());
             ingrediente.setPrecioCompra(dto.precioCompra());
             ingrediente.setCantidadDisponible(dto.cantidadDisponible());
-            ingrediente.setUnidadMedida(unidadMedidaRepo.findById(dto.unidad_medida()).orElseThrow(() -> new Exception("Unidad de medida no encontrada")));
+            ingrediente.setUnidadMedida(unidadMedidaRepo.findById(dto.unidad_medida()).orElseThrow(() ->
+                    new RecordNotFoundException("UNIDAD MEDIDA")));
             ingredienteRepo.save(ingrediente);
             return true;
         }
@@ -49,8 +59,13 @@ public class IngredienteServiceImp implements IngredienteService {
     }
 
     @Override
-    public void delete(String id) throws Exception {
-
+    public boolean delete(String id) throws Exception {
+        var ingredienteEntity = ingredienteRepo.findById(Integer.parseInt(id));
+        if (ingredienteEntity.isPresent()) {
+            ingredienteRepo.delete(ingredienteEntity.get());
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -65,7 +80,7 @@ public class IngredienteServiceImp implements IngredienteService {
 
     @Override
     public boolean editStock(String id, int cantidad) throws Exception {
-        var ingrediente = ingredienteRepo.findById(Integer.parseInt(id)).orElseThrow(() -> new Exception("Ingrediente no encontrado"));
+        var ingrediente = ingredienteRepo.findById(Integer.parseInt(id)).orElseThrow(() -> new RecordNotFoundException("INGREDIENTE"));
         ingrediente.setCantidadDisponible(cantidad);
         ingredienteRepo.save(ingrediente);
         return true;

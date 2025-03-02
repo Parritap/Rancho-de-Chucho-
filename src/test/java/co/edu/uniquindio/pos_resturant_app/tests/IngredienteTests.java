@@ -4,6 +4,8 @@ import co.edu.uniquindio.pos_resturant_app.dto.ingrediente.IngredienteCreateDTO;
 import co.edu.uniquindio.pos_resturant_app.model.Ingrediente;
 import co.edu.uniquindio.pos_resturant_app.model.UnidadMedida;
 import co.edu.uniquindio.pos_resturant_app.repository.IngredienteRepo;
+import co.edu.uniquindio.pos_resturant_app.repository.UnidadMedidaRepo;
+import co.edu.uniquindio.pos_resturant_app.services.implementations.UnidadMedidaServiceImp;
 import co.edu.uniquindio.pos_resturant_app.services.specifications.IngredienteService;
 import co.edu.uniquindio.pos_resturant_app.services.specifications.UnidadMedidaService;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,9 +25,25 @@ public class IngredienteTests {
     private UnidadMedidaService unidadMedidaService;
     @Autowired
     private IngredienteRepo ingredienteRepo;
+    @Autowired
+    private UnidadMedidaRepo unidadMedidaRepo;
 
-    @BeforeAll
-    static void setUp() {
+    @Test
+    void setUp() {
+
+        System.out.println("Before all tests");
+        UnidadMedida kg = UnidadMedida.builder().notacion("kg").nombre("Kilogramos").build();
+        UnidadMedida gr = UnidadMedida.builder().notacion("gr").nombre("Gramos").build();
+        UnidadMedida lt = UnidadMedida.builder().notacion("lt").nombre("Litros").build();
+
+        try {
+            System.out.println((unidadMedidaService.create(kg)));
+            System.out.println((unidadMedidaService.create(gr)));
+            System.out.println((unidadMedidaService.create(lt)));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     //@Test
@@ -78,13 +96,16 @@ public class IngredienteTests {
     public void dtosTest() {
         IngredienteCreateDTO dto = new IngredienteCreateDTO(
                 "",
-                null,
+                "",
                 new BigDecimal("1.50"),
                 50,
                 "kg");
-
         var entity = dto.toEntity();
-        ingredienteRepo.save(entity);
+        var unidadOptional = unidadMedidaRepo.findById(dto.unidad_medida());
+        if (unidadOptional.isPresent()) {
+            entity.setUnidadMedida(unidadOptional.get());
+        }
+        System.out.println(entity.toString());
     }
 
 
