@@ -36,7 +36,7 @@ public class Plato implements Serializable {
     @JoinColumn(
             name = "id_tipo_plato",
             referencedColumnName = "id_tipo_plato",
-            nullable = true)
+            nullable = false)
     private TipoPlato tipoPlato;
 
 }

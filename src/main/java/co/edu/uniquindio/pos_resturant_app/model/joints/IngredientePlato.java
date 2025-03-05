@@ -38,11 +38,13 @@ public class IngredientePlato implements Serializable {
     private Plato plato;
 
     @Min(value = 0)
+    @Column(nullable = false)
+    @NotNull
     private Integer cantidad;
 
-    @ManyToOne
-    @NotNull
-    @JoinColumn(name = "unidad", nullable = false) // Foreign key to Unidad table
-    private UnidadMedida unidad; // Assuming you have a Unidad entity
+//    @ManyToOne
+//    @NotNull
+//    @JoinColumn(name = "unidad", nullable = false) // Foreign key to Unidad table
+//    private UnidadMedida unidad; // Assuming you have a Unidad entity
 
 }

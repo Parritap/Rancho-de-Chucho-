@@ -27,7 +27,7 @@ public class TipoPlato implements Serializable {
     private List<Plato> listaPlatos;
 
     @ManyToOne
-    @JoinColumn (name = "tipo_padre", referencedColumnName = "id_tipo_plato", nullable = false)
+    @JoinColumn (name = "tipo_padre", referencedColumnName = "id_tipo_plato", nullable = true)
     private TipoPlato tipoPadre;
 
 }
