@@ -1,7 +1,9 @@
 package co.edu.uniquindio.pos_resturant_app.model;
 
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Null;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,11 +31,12 @@ public class Plato implements Serializable {
     @Column(nullable = false)
     private double precio;
 
+    @Nullable
     @ManyToOne
     @JoinColumn(
             name = "id_tipo_plato",
             referencedColumnName = "id_tipo_plato",
-            nullable = false)
+            nullable = true)
     private TipoPlato tipoPlato;
 
 }

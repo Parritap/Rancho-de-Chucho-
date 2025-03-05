@@ -41,6 +41,6 @@ public class Orden implements Serializable {
     private BigDecimal subtotal;
 
     @Column(nullable = false)
-    private Integer impuestos;
+    private BigDecimal impuestos;
 
 }

@@ -6,6 +6,8 @@ import co.edu.uniquindio.pos_resturant_app.model.UnidadMedida;
 import co.edu.uniquindio.pos_resturant_app.model.keys.IngredientePlatoID;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -39,7 +41,8 @@ public class IngredientePlato implements Serializable {
     private Integer cantidad;
 
     @ManyToOne
-    @JoinColumn(name = "unidad") // Foreign key to Unidad table
+    @NotNull
+    @JoinColumn(name = "unidad", nullable = false) // Foreign key to Unidad table
     private UnidadMedida unidad; // Assuming you have a Unidad entity
 
 }
