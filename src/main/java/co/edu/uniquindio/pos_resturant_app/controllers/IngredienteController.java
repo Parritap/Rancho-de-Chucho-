@@ -45,6 +45,7 @@ public class IngredienteController {
                         .body(new MensajeDTO<>(false, -1));
             }
         } catch (RecordNotFoundException e) {
+            log.error("No existe una unidad de medida con el id: {}", dto.unidad_medida());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new MensajeDTO<>(false, -1));
         } catch (Exception e) {
