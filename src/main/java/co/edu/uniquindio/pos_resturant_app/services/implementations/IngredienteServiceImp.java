@@ -3,6 +3,7 @@ package co.edu.uniquindio.pos_resturant_app.services.implementations;
 
 import co.edu.uniquindio.pos_resturant_app.dto.ingrediente.IngredienteCreateDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.ingrediente.IngredienteReadDTO;
+import co.edu.uniquindio.pos_resturant_app.exceptions.DuplicatedRecordException;
 import co.edu.uniquindio.pos_resturant_app.exceptions.RecordNotFoundException;
 import co.edu.uniquindio.pos_resturant_app.repository.IngredienteRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.UnidadMedidaRepo;
@@ -31,13 +32,20 @@ public class IngredienteServiceImp implements IngredienteService {
      *
      * @param dto
      * @return the id of the created Ingrediente.
-     * @throws RecordNotFoundException if the the specified UnidadMedida in the DTO does not exist.
+     * @throws RecordNotFoundException if  the specified UnidadMedida in the DTO does not exist.
+     * @throws DuplicatedRecordException if an Ingrediente with the same name and brand already exists.
      */
     @Override
-    public int create(IngredienteCreateDTO dto) throws Exception {
+    public int create(IngredienteCreateDTO dto) throws RecordNotFoundException, DuplicatedRecordException {
         var entity = dto.toEntity();
         entity.setUnidadMedida(unidadMedidaRepo.findById(dto.unidad_medida()).orElseThrow(() ->
                 new RecordNotFoundException("UNIDAD MEDIDA")));
+
+        var copyOptional = ingredienteRepo.findFirstByNombreAndMarca(dto.nombre(), dto.marca());
+        if (copyOptional.isPresent()) {
+            throw new DuplicatedRecordException(
+                    "Otra entidad con el mismo nombre y marca ya existe \nIngrediente ->\n" + copyOptional.get().toJSON());
+        }
         return ingredienteRepo.save(entity).getId();
     }
 

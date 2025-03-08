@@ -36,4 +36,15 @@ public class Ingrediente implements Serializable {
     @ManyToOne
     @JoinColumn (nullable = false, name = "unidad_medida", referencedColumnName = "notacion")
     private UnidadMedida unidadMedida;
+
+    public String toJSON () {
+        return "{" +
+                "\"id\":" + id +
+                ", \"nombre\":\"" + nombre + '\"' +
+                ", \"marca\":\"" + marca + '\"' +
+                ", \"precioCompra\":" + precioCompra +
+                ", \"cantidadDisponible\":" + cantidadDisponible +
+                ", \"unidad_medida\":\"" + unidadMedida.getNotacion() + '\"' +
+                '}';
+    }
 }
