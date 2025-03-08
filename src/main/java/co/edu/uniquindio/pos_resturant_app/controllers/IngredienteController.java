@@ -3,6 +3,7 @@ package co.edu.uniquindio.pos_resturant_app.controllers;
 import co.edu.uniquindio.pos_resturant_app.dto.ingrediente.IngredienteCreateDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.ingrediente.IngredienteReadDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.web.MensajeDTO;
+import co.edu.uniquindio.pos_resturant_app.exceptions.CascadeEffectException;
 import co.edu.uniquindio.pos_resturant_app.exceptions.RecordNotFoundException;
 import co.edu.uniquindio.pos_resturant_app.model.Ingrediente;
 import co.edu.uniquindio.pos_resturant_app.services.specifications.IngredienteService;
@@ -94,13 +95,23 @@ public class IngredienteController {
         }
     }
 
+    /**
+     * Method for deleting an ingredient. And ingredient can only be deleted if it is not used in any recipe.
+     * @param id
+     * @throws RecordNotFoundException if the ingredient with specified id does not exist
+     * @throws CascadeEffectException if the ingredient is used in any recipe
+     * @return MensajeDTO with a boolean indicating if the ingredient was deleted or not
+     */
     @DeleteMapping("/{id}/delete")
-    public ResponseEntity<MensajeDTO<Boolean>> delete(@PathVariable String id) {
+    public ResponseEntity<MensajeDTO<Boolean>> delete(@PathVariable Integer id) {
         try {
-            ingredienteService.delete(id);
-            return ResponseEntity.ok(new MensajeDTO<>(false, true));
+            boolean deleted = ingredienteService.delete(id);
+            return ResponseEntity.ok(new MensajeDTO<>(true, true));
         } catch (RecordNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new MensajeDTO<>(false, false));
+        } catch (CascadeEffectException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new MensajeDTO<>(false, false));
         } catch (Exception e) {
             log.error("Error inesperado eliminando ingrediente: {}", e.getMessage());
