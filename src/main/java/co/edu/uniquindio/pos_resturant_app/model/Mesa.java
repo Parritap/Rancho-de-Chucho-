@@ -21,7 +21,7 @@ public class Mesa implements Serializable {
 
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-    private int id_mesa;
+    private int id ;
 
     @Column(nullable = false)
     private boolean disponible;

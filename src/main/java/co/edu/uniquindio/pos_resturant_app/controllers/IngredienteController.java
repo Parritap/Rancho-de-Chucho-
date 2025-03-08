@@ -1,8 +1,10 @@
 package co.edu.uniquindio.pos_resturant_app.controllers;
 
 import co.edu.uniquindio.pos_resturant_app.dto.ingrediente.IngredienteCreateDTO;
+import co.edu.uniquindio.pos_resturant_app.dto.ingrediente.IngredienteReadDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.web.MensajeDTO;
 import co.edu.uniquindio.pos_resturant_app.exceptions.RecordNotFoundException;
+import co.edu.uniquindio.pos_resturant_app.model.Ingrediente;
 import co.edu.uniquindio.pos_resturant_app.services.specifications.IngredienteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -105,5 +109,16 @@ public class IngredienteController {
         }
     }
 
+    @GetMapping("/getAll")
+    public ResponseEntity<MensajeDTO<List<IngredienteReadDTO>>> getAll() {
+        try {
+            var ingredientes = ingredienteService.getAll();
+            return ResponseEntity.ok().body(new MensajeDTO<>(false, ingredientes));
+        } catch (Exception e) {
+            log.error("Error inesperado obteniendo ingredientes: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new MensajeDTO<>(true, null));
+        }
+    }
 
 }

@@ -2,11 +2,13 @@ package co.edu.uniquindio.pos_resturant_app.dto.ingrediente;
 
 import co.edu.uniquindio.pos_resturant_app.model.Ingrediente;
 import jakarta.validation.constraints.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.validator.constraints.Length;
 
 import java.math.BigDecimal;
 
 import co.edu.uniquindio.pos_resturant_app.interfaces.DTO;
+
 
 public record IngredienteCreateDTO(
 

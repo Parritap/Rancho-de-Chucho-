@@ -24,7 +24,7 @@ public class Orden implements Serializable {
     private Integer idOrden;
 
     @ManyToOne
-    @JoinColumn(name = "id_mesa", referencedColumnName = "id_mesa",nullable = false)  // Foreign Key to 'mesa'
+    @JoinColumn(name = "id_mesa",nullable = false)  // Foreign Key to 'mesa'
     private Mesa mesa;
 
     @ManyToOne

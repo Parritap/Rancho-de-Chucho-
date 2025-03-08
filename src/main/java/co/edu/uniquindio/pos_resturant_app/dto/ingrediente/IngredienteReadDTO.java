@@ -17,7 +17,7 @@ public record IngredienteReadDTO (
         @NotNull @Size(min = 1) String marca,
         @NotNull @Positive BigDecimal precioCompra,
         @NotNull @PositiveOrZero Integer cantidadDisponible,
-        @NotNull @Length(min = 0, max = 8) String unidad_medida
+        @NotNull @Length(min = 1, max = 8) String unidad_medida
         //Hace referencia a la columna "notacion" de la tabla "unidad_medida"
 
 ) implements DTO<Ingrediente> {
@@ -32,6 +32,17 @@ public record IngredienteReadDTO (
                 .build();
     }
 
+    public IngredienteReadDTO(Ingrediente entity) {
+        this(
+                entity.getId(),
+                entity.getNombre(),
+                entity.getMarca(),
+                entity.getPrecioCompra(),
+                entity.getCantidadDisponible(),
+                entity.getUnidadMedida().getNotacion()
+        );
+    }
+
     @Override
     public String toJSON() {
         return "{" +
@@ -43,4 +54,5 @@ public record IngredienteReadDTO (
                 ", \"unidad_medida\":\"" + unidad_medida + '\"' +
                 '}';
     }
+
 }
