@@ -97,7 +97,7 @@ public boolean delete(Integer id) throws CascadeEffectException, RecordNotFoundE
     @Override
     public boolean editStock(String id, int cantidad) throws Exception {
         var ingrediente = ingredienteRepo.findById(Integer.parseInt(id)).orElseThrow(() -> new RecordNotFoundException("INGREDIENTE"));
-        ingrediente.setCantidadDisponible(cantidad);
+        ingrediente.setCantidadDisponible( ingrediente.getCantidadDisponible()+cantidad);
         ingredienteRepo.save(ingrediente);
         return true;
     }
