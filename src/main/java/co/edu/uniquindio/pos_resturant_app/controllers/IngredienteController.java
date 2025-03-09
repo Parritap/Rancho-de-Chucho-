@@ -33,6 +33,8 @@ public class IngredienteController {
      *
      * @param dto
      * @return MensajeDTO con el id del ingrediente creado
+     * @throws RecordNotFoundException si la unidad de medida no existe
+     * @throws Exception si ocurre un error inesperado
      */
     @PostMapping("/save")
     public ResponseEntity<MensajeDTO<Integer>> create(@Valid @RequestBody IngredienteCreateDTO dto) {
@@ -40,19 +42,19 @@ public class IngredienteController {
             int entityId = ingredienteService.create(dto);
             if (entityId > 0) {
                 return ResponseEntity.status(HttpStatus.CREATED)
-                        .body(new MensajeDTO<>(true, entityId));
+                        .body(new MensajeDTO<>(false, entityId));
             } else {
                 return ResponseEntity.badRequest()
-                        .body(new MensajeDTO<>(false, -1));
+                        .body(new MensajeDTO<>(true, -1));
             }
         } catch (RecordNotFoundException e) {
             log.error("No existe una unidad de medida con el id: {}", dto.unidad_medida());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new MensajeDTO<>(false, -1));
+                    .body(new MensajeDTO<>(true, -1));
         } catch (Exception e) {
             log.error("Error inesperado creando ingrediente: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new MensajeDTO<>(false, -1));
+                    .body(new MensajeDTO<>(true, -1));
         }
     }
 
