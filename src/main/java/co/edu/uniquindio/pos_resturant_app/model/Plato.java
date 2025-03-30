@@ -1,16 +1,18 @@
 package co.edu.uniquindio.pos_resturant_app.model;
 
 
+import co.edu.uniquindio.pos_resturant_app.dto.plato.PlatoReadDTO;
+import co.edu.uniquindio.pos_resturant_app.model.helpers.helperClass;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Null;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import lombok.extern.flogger.Flogger;
+
 
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -31,12 +33,27 @@ public class Plato implements Serializable {
     @Column(nullable = false)
     private double precio;
 
-    @Nullable
     @ManyToOne
     @JoinColumn(
             name = "id_tipo_plato",
             referencedColumnName = "id_tipo_plato",
             nullable = false)
     private TipoPlato tipoPlato;
+
+    @Column
+    private boolean activo;
+
+
+    public PlatoReadDTO toReadDTO() {
+
+        return new PlatoReadDTO(
+                id_plato,
+                nombre,
+                descripcion,
+                precio,
+                tipoPlato.getNombre()
+        );
+    }
+
 
 }
