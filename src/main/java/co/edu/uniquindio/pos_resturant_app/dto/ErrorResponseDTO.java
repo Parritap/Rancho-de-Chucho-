@@ -17,4 +17,5 @@ public class ErrorResponseDTO {
     private String error;
     private String message;
     private String path;
+
 }
