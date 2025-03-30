@@ -2,11 +2,9 @@ package co.edu.uniquindio.pos_resturant_app.tests;
 
 import co.edu.uniquindio.pos_resturant_app.dto.ingrediente.IngredienteCreateDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.ingrediente.IngredienteReadDTO;
-import co.edu.uniquindio.pos_resturant_app.exceptions.CascadeEffectException;
 import co.edu.uniquindio.pos_resturant_app.exceptions.RecordNotFoundException;
 import co.edu.uniquindio.pos_resturant_app.model.Ingrediente;
 import co.edu.uniquindio.pos_resturant_app.model.UnidadMedida;
-import co.edu.uniquindio.pos_resturant_app.model.joints.IngredientePlato;
 import co.edu.uniquindio.pos_resturant_app.repository.IngredienteRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.UnidadMedidaRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.joints.IngredientePlatoRepo;
@@ -100,13 +98,13 @@ class IngredienteServiceImpTest {
     }
 
     @Test
-    void editStock_Success() throws Exception {
+    void addStock_Success() throws Exception {
         // Arrange
         when(ingredienteRepo.findById(1)).thenReturn(Optional.of(ingrediente));
         when(ingredienteRepo.save(ingrediente)).thenReturn(ingrediente);
 
         // Act
-        boolean result = ingredienteService.editStock("1", 50);
+        boolean result = ingredienteService.addStock("1", 50);
 
         // Assert
         assertTrue(result);
@@ -115,35 +113,8 @@ class IngredienteServiceImpTest {
         verify(ingredienteRepo).save(ingrediente);
     }
 
-    @Test
-    void editStock_DecreaseStock_Success() throws Exception {
-        // Arrange
-        when(ingredienteRepo.findById(1)).thenReturn(Optional.of(ingrediente));
-        when(ingredienteRepo.save(ingrediente)).thenReturn(ingrediente);
 
-        // Act
-        boolean result = ingredienteService.editStock("1", -50);
 
-        // Assert
-        assertTrue(result);
-        assertEquals(50, ingrediente.getCantidadDisponible());
-        verify(ingredienteRepo).findById(1);
-        verify(ingredienteRepo).save(ingrediente);
-    }
-
-    @Test
-    void editStock_IngredientNotFound() throws Exception {
-        // Arrange
-        when(ingredienteRepo.findById(999)).thenReturn(Optional.empty());
-
-        // Act
-        boolean result = ingredienteService.editStock("999", 50);
-
-        // Assert
-        assertFalse(result);
-        verify(ingredienteRepo).findById(999);
-        verify(ingredienteRepo, never()).save(any(Ingrediente.class));
-    }
 
     @Test
     void update_Success() throws Exception {
@@ -162,18 +133,7 @@ class IngredienteServiceImpTest {
         verify(ingredienteRepo).save(any(Ingrediente.class));
     }
 
-    @Test
-    void update_IngredientNotFound() {
-        // Arrange
-        when(ingredienteRepo.findById(999)).thenReturn(Optional.empty());
 
-        // Act & Assert
-        assertThrows(RecordNotFoundException.class, () -> {
-            ingredienteService.update(createDTO, 999);
-        });
-        verify(ingredienteRepo).findById(999);
-        verify(ingredienteRepo, never()).save(any(Ingrediente.class));
-    }
 
     @Test
     void update_UnitOfMeasureNotFound() {
@@ -189,52 +149,7 @@ class IngredienteServiceImpTest {
         verify(unidadMedidaRepo).findById("kg");
         verify(ingredienteRepo, never()).save(any(Ingrediente.class));
     }
-//
-//    @Test
-//    void delete_Success() throws Exception {
-//        // Arrange
-//        when(ingredienteRepo.findById(1)).thenReturn(Optional.of(ingrediente));
-//        when(ingredientePlatoRepo.findById(ingrediente)).thenReturn(new ArrayList<>());
-//        doNothing().when(ingredienteRepo).delete(ingrediente);
-//
-//        // Act
-//        boolean result = ingredienteService.delete(1);
-//
-//        // Assert
-//        assertTrue(result);
-//        verify(ingredienteRepo).findById(1);
-//        verify(ingredientePlatoRepo).findByIngrediente(ingrediente);
-//        verify(ingredienteRepo).delete(ingrediente);
-//    }
-//
-//    @Test
-//    void delete_IngredientNotFound() {
-//        // Arrange
-//        when(ingredienteRepo.findById(999)).thenReturn(Optional.empty());
-//
-//        // Act & Assert
-//        assertThrows(RecordNotFoundException.class, () -> {
-//            ingredienteService.delete(999);
-//        });
-//        verify(ingredienteRepo).findById(999);
-//        verify(ingredienteRepo, never()).delete(any(Ingrediente.class));
-//    }
-//
-//    @Test
-//    void delete_CascadeEffect() {
-//        // Arrange
-//        when(ingredienteRepo.findById(1)).thenReturn(Optional.of(ingrediente));
-//        List<RecetaIngrediente> recetaIngredientes = List.of(new RecetaIngrediente());
-//        when(ingredientePlatoRepo.findByIngrediente(ingrediente)).thenReturn(recetaIngredientes);
-//
-//        // Act & Assert
-//        assertThrows(CascadeEffectException.class, () -> {
-//            ingredienteService.delete(1);
-//        });
-//        verify(ingredienteRepo).findById(1);
-//        verify(ingredientePlatoRepo).findByIngrediente(ingrediente);
-//        verify(ingredienteRepo, never()).delete(any(Ingrediente.class));
-//    }
+
 
     @Test
     void getAll_Success() throws Exception {

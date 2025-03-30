@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+
+  back:
+    image: parritap/rest-back
+    container_name: rest_back
+    ports:
+      - "8086:8086"
+    restart: always
+    networks:
+      - rest_net
+
+  front:
+    image: parritap/rest-front
+    container_name: rest_front
+    depends_on:
+      - back 
+    ports:
+      - "443:80"  # Ajusta según el puerto de tu contenedor
+    networks:
+      - rest_net
+
+
+networks:
+  rest_net:
+    driver: bridge

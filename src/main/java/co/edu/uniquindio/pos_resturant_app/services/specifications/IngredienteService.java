@@ -4,7 +4,6 @@ import co.edu.uniquindio.pos_resturant_app.dto.ingrediente.IngredienteCreateDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.ingrediente.IngredienteReadDTO;
 import co.edu.uniquindio.pos_resturant_app.exceptions.CascadeEffectException;
 import co.edu.uniquindio.pos_resturant_app.exceptions.RecordNotFoundException;
-import co.edu.uniquindio.pos_resturant_app.model.Ingrediente;
 
 import java.util.List;
 
@@ -29,7 +28,7 @@ public interface IngredienteService {
 
 
     //Todo cambiar nombre en el front
-    boolean editStock(String id, int cantidad) throws Exception;
+    boolean addStock(String id, int cantidad) throws Exception;
 
 
 }

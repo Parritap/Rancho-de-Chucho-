@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -99,7 +98,7 @@ class IngredienteControllerTest {
     @Test
     void editStock_Success() throws Exception {
         // Arrange
-        when(ingredienteService.editStock("1", 50)).thenReturn(true);
+        when(ingredienteService.addStock("1", 50)).thenReturn(true);
 
         // Act
         ResponseEntity<MensajeDTO<Boolean>> response = ingredienteController.editStock("1", 50);
@@ -113,7 +112,7 @@ class IngredienteControllerTest {
     @Test
     void editStock_NotFound() throws Exception {
         // Arrange
-        when(ingredienteService.editStock("999", 50)).thenReturn(false);
+        when(ingredienteService.addStock("999", 50)).thenReturn(false);
 
         // Act
         ResponseEntity<MensajeDTO<Boolean>> response = ingredienteController.editStock("999", 50);
