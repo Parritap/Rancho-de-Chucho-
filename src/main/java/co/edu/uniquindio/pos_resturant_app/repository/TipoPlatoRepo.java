@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TipoPlatoRepo extends JpaRepository<TipoPlato, Integer> {
 
+    Object findByNombre(String nombre);
 }
