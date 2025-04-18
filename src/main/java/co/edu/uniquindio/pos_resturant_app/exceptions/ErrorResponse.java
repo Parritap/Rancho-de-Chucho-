@@ -17,11 +17,7 @@ public class ErrorResponse {
     private LocalDateTime timestamp;
     private List<String> details = new ArrayList<>();
 
-    public ErrorResponse(String errorCode, String message, LocalDateTime timestamp) {
-        this.errorCode = errorCode;
-        this.message = message;
-        this.timestamp = timestamp;
-    }
+
 
     public void addDetail(String detail) {
         details.add(detail);

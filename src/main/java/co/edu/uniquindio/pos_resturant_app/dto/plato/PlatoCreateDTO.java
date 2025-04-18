@@ -16,7 +16,7 @@ public record PlatoCreateDTO(
 
     /**
      * Lacks tipoPlato reference
-     * @return Plato woith noombre, descripcion yprecio
+     * @return Plato with nombre, descripcion y precio
      */
     @Override
     public Plato toEntity() {

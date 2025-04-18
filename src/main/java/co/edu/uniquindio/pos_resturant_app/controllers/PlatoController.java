@@ -3,6 +3,7 @@ package co.edu.uniquindio.pos_resturant_app.controllers;
 import co.edu.uniquindio.pos_resturant_app.dto.plato.PlatoCreateDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.plato.PlatoReadDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.web.MensajeDTO;
+import co.edu.uniquindio.pos_resturant_app.repository.TipoPlatoRepo;
 import co.edu.uniquindio.pos_resturant_app.services.specifications.PlatoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +21,17 @@ import java.util.List;
 public class PlatoController {
 
     private final PlatoService platoService;
+    private final TipoPlatoRepo tipoPlatoRepo;
 
     @PostMapping("/save")
     public ResponseEntity<MensajeDTO<Integer>> create(@Valid @RequestBody PlatoCreateDTO dto) {
+
+        if (tipoPlatoRepo.findById(dto.id_tipo_plato()).isEmpty()) {
+            log.error("No existe un tipo de plato con el id: {}", dto.id_tipo_plato());
+            return ResponseEntity.status(400)
+                    .body(new MensajeDTO<>(true, -1, "No existe un tipo de plato con el id: " + dto.id_tipo_plato()));
+        }
+
         try {
             int entityId = platoService.create(dto);
             if (entityId > 0) {
@@ -41,6 +50,11 @@ public class PlatoController {
 
     @PutMapping("/{id}/update")
     public ResponseEntity<MensajeDTO<Boolean>> update(@Valid @RequestBody PlatoCreateDTO dto, @PathVariable Integer id) {
+        if (tipoPlatoRepo.findById(id).isEmpty()) {
+            log.error("No existe un tipo de plato con el id: {}", dto.id_tipo_plato());
+            return ResponseEntity.status(400)
+                    .body(new MensajeDTO<>(true, false, "No existe un tipo de plato con el id: " + dto.id_tipo_plato()));
+        }
         try {
             platoService.update(dto, id);
         } catch (Exception e) {

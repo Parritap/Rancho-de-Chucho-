@@ -1,4 +1,5 @@
 package co.edu.uniquindio.pos_resturant_app.model;
+import co.edu.uniquindio.pos_resturant_app.dto.tipoPlato.TipoPlatoCreateDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,4 +31,11 @@ public class TipoPlato implements Serializable {
     @JoinColumn (name = "tipo_padre", referencedColumnName = "id_tipo_plato", nullable = true)
     private TipoPlato tipoPadre;
 
+    public TipoPlatoCreateDTO toTipoPlatoCreateDTO() {
+        return TipoPlatoCreateDTO.builder()
+                .nombre(nombre)
+                .descripcion(descripcion)
+                .idTipoPadre(id_tipo_plato)
+                .build();
+    }
 }

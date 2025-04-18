@@ -14,11 +14,11 @@ docker pull dpage/pgadmin4 && docker run \
  -e PGADMIN_DEFAULT_PASSWORD=root \
  -d dpage/pgadmin4
 
-docker run -d --name postgres \
+docker run -d --name pos-rest \
   --network $network \
   -e POSTGRES_USER=user \
   -e POSTGRES_PASSWORD=apollo \
   -e POSTGRES_DB=restaurante \
-  -p 5432:5432 \
-  -v pg_data:/var/lib/postgresql/data \
+  -p 5555:5432 \
+  -v pg_data_res:/var/lib/postgresql/data \
   postgres
