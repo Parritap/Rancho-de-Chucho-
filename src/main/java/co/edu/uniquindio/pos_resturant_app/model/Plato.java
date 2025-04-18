@@ -2,8 +2,6 @@ package co.edu.uniquindio.pos_resturant_app.model;
 
 
 import co.edu.uniquindio.pos_resturant_app.dto.plato.PlatoReadDTO;
-import co.edu.uniquindio.pos_resturant_app.model.helpers.helperClass;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +23,7 @@ public class Plato implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id_plato;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String nombre;
 
     private String descripcion;

@@ -9,14 +9,23 @@ package co.edu.uniquindio.pos_resturant_app.dto.web;
  */
 public record MensajeDTO<T>(
         boolean error,
-        T respuesta
+        T respuesta,
+        String mensaje
 ) {
+    // Single-parameter constructor
     public MensajeDTO(T respuesta) {
-        this(false, respuesta);
+        this(false, respuesta, "");
     }
 
+    // Two-parameter constructor
     public MensajeDTO(boolean error, T respuesta) {
+        this(error, respuesta, "");
+    }
+
+    // The canonical constructor is being overridden but has an error
+    public MensajeDTO(boolean error, T respuesta, String mensaje) {
         this.error = error;
         this.respuesta = respuesta;
+        this.mensaje = mensaje; // Should use the parameter, not hardcode ""
     }
 }

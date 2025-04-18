@@ -21,10 +21,10 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(RecordNotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO> handleRecordNotFoundException(
+    public ResponseEntity<ErrorResponse> handleRecordNotFoundException(
             RecordNotFoundException ex, HttpServletRequest request) {
 
-        ErrorResponse err = ErrorResponse.builder().
+        ErrorResponse error = ErrorResponse.builder().
                 errorCode("ENTITY_NOT_FOUND").
                 message(ex.getMessage()).
                 timestamp(LocalDateTime.now()).
@@ -34,16 +34,15 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DuplicatedRecordException.class)
-    public ResponseEntity<ErrorResponseDTO> handleDuplicatedRecordException(
+    public ResponseEntity<ErrorResponse> handleDuplicatedRecordException(
             DuplicatedRecordException ex, HttpServletRequest request) {
 
-        ErrorResponseDTO error = new ErrorResponseDTO(
-                LocalDateTime.now(),
-                HttpStatus.CONFLICT.value(),
-                "Conflict",
-                ex.getMessage(),
-                request.getRequestURI()
-        );
+        ErrorResponse error = ErrorResponse.builder().
+                errorCode("ENTITY_NOT_FOUND").
+                message(ex.getMessage()).
+                timestamp(LocalDateTime.now()).
+                build();
+
 
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }

@@ -68,19 +68,19 @@ public class IngredienteServiceImp implements IngredienteService {
         return false;
     }
 
-@Override
-public boolean delete(Integer id) throws CascadeEffectException, RecordNotFoundException {
-    if (ingredientePlatoRepo.existsByIngredienteId(id)) {
-        throw new CascadeEffectException("No se puede eliminar el ingrediente porque otras tablas dependen de este.");
+    @Override
+    public boolean delete(Integer id) throws CascadeEffectException, RecordNotFoundException {
+        if (ingredientePlatoRepo.existsByIngredienteId(id)) {
+            throw new CascadeEffectException("No se puede eliminar el ingrediente porque otras tablas dependen de este.");
+        }
+
+        var ingrediente = ingredienteRepo.findById(id).orElseThrow(() ->
+                new RecordNotFoundException("Ingrediente con ID " + id + " no encontrado")
+        );
+
+        ingredienteRepo.delete(ingrediente);
+        return true;
     }
-
-    var ingrediente = ingredienteRepo.findById(id).orElseThrow(() ->
-        new RecordNotFoundException("Ingrediente con ID " + id + " no encontrado")
-    );
-
-    ingredienteRepo.delete(ingrediente);
-    return true;
-}
 
     @Override
     public IngredienteCreateDTO findById(String id) throws Exception {
@@ -95,9 +95,9 @@ public boolean delete(Integer id) throws CascadeEffectException, RecordNotFoundE
     }
 
     @Override
-    public boolean editStock(String id, int cantidad) throws Exception {
-        var ingrediente = ingredienteRepo.findById(Integer.parseInt(id)).orElseThrow(() -> new RecordNotFoundException("INGREDIENTE"));
-        ingrediente.setCantidadDisponible( ingrediente.getCantidadDisponible()+cantidad);
+    public boolean addStock(String id, int cantidad) throws Exception {
+        var ingrediente = ingredienteRepo.findById(Integer.parseInt(id)).orElseThrow(() -> new RecordNotFoundException("Ingrediente con Id " + id + " no encontrado"));
+        ingrediente.setCantidadDisponible(ingrediente.getCantidadDisponible() + cantidad);
         ingredienteRepo.save(ingrediente);
         return true;
     }

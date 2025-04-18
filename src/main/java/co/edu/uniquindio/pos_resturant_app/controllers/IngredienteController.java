@@ -5,7 +5,6 @@ import co.edu.uniquindio.pos_resturant_app.dto.ingrediente.IngredienteReadDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.web.MensajeDTO;
 import co.edu.uniquindio.pos_resturant_app.exceptions.CascadeEffectException;
 import co.edu.uniquindio.pos_resturant_app.exceptions.RecordNotFoundException;
-import co.edu.uniquindio.pos_resturant_app.model.Ingrediente;
 import co.edu.uniquindio.pos_resturant_app.services.specifications.IngredienteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/ingrediente")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 @Slf4j
 public class IngredienteController {
 
@@ -70,7 +69,7 @@ public class IngredienteController {
      */
     @PutMapping("/updateStock/{id}/{cantidad}/")
     public ResponseEntity<MensajeDTO<Boolean>> editStock(@PathVariable String id, @PathVariable int cantidad) throws Exception {
-        var succcess = ingredienteService.editStock(id, cantidad);
+        var succcess = ingredienteService.addStock(id, cantidad);
         if (succcess) {
             return ResponseEntity.ok(new MensajeDTO<>(true, false));
         } else {

@@ -5,6 +5,7 @@ import co.edu.uniquindio.pos_resturant_app.dto.plato.PlatoReadDTO;
 import co.edu.uniquindio.pos_resturant_app.exceptions.CascadeEffectException;
 import co.edu.uniquindio.pos_resturant_app.exceptions.RecordNotFoundException;
 import co.edu.uniquindio.pos_resturant_app.model.Plato;
+import co.edu.uniquindio.pos_resturant_app.model.TipoPlato;
 import co.edu.uniquindio.pos_resturant_app.repository.PlatoRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.TipoPlatoRepo;
 import co.edu.uniquindio.pos_resturant_app.services.specifications.PlatoService;
@@ -28,7 +29,9 @@ public class PlatoServiceImp implements PlatoService {
 
         // Check if tipoPlato exists
         // En teoría siempre debe exitir el tipo plato porque los tipos se cargan en el front con base a lo que hay en la db
-        var tipoPlato = tipoPlatoRepo.findById(dto.id_tipo_plato()).get();
+        var tipoPlato = tipoPlatoRepo.findById(dto.id_tipo_plato()).orElseThrow(
+                () -> new RecordNotFoundException("Tipo de plato no encontrado")
+        );
 
         try {
             var entity = dto.toEntity();
@@ -58,7 +61,7 @@ public class PlatoServiceImp implements PlatoService {
                     .tipoPlato(tipoPlato)
                     .build();
 
-            platoRepo.save(platoEntity);
+            platoRepo.save(entity);
 
             return true;
         } catch (Exception e) {
@@ -98,7 +101,14 @@ public class PlatoServiceImp implements PlatoService {
 
     @Override
     public PlatoCreateDTO findById(Integer id) throws RecordNotFoundException, Exception {
-        return null;
+        Plato plato = platoRepo.findById(id)
+            .orElseThrow(() -> new RecordNotFoundException("PLATO: " + id));
+        return new PlatoCreateDTO(
+            plato.getNombre(),
+            plato.getDescripcion(),
+            plato.getPrecio(),
+            plato.getTipoPlato().getId_tipo_plato()
+        );
     }
 
     @Override
