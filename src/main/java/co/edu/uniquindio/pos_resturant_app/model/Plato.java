@@ -49,9 +49,12 @@ public class Plato implements Serializable {
                 nombre,
                 descripcion,
                 precio,
-                tipoPlato.getNombre()
+                tipoPlato.getNombre(),
+                activo
+
         );
     }
+
 
 
 }

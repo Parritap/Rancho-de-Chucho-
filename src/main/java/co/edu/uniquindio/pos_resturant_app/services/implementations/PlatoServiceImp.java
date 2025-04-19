@@ -54,14 +54,12 @@ public class PlatoServiceImp implements PlatoService {
                 .orElseThrow(() -> new RecordNotFoundException("TIPO PLATO: " + dto.id_tipo_plato()));// TODO Esto en teoría nunca debería de suceder
 
         try {
-            var entity = Plato.builder()
-                    .nombre(dto.nombre())
-                    .descripcion(dto.descripcion())
-                    .precio(dto.precio())
-                    .tipoPlato(tipoPlato)
-                    .build();
+            platoEntity.setNombre(dto.nombre());
+            platoEntity.setDescripcion(dto.descripcion());
+            platoEntity.setPrecio(dto.precio());
+            platoEntity.setTipoPlato(tipoPlato);
 
-            platoRepo.save(entity);
+            platoRepo.save(platoEntity); // Aquí sí haces un UPDATE real
 
             return true;
         } catch (Exception e) {
@@ -90,7 +88,7 @@ public class PlatoServiceImp implements PlatoService {
         var entityOptional = platoRepo.findById(id);
         if (entityOptional.isPresent()) {
             var plato = entityOptional.get();
-            plato.setActivo(false);
+            plato.setActivo(true);
             platoRepo.save(plato);
         } else {
             throw new RecordNotFoundException("PLATO con ID: " + id);

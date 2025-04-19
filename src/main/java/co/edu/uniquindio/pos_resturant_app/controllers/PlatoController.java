@@ -50,7 +50,7 @@ public class PlatoController {
 
     @PutMapping("/{id}/update")
     public ResponseEntity<MensajeDTO<Boolean>> update(@Valid @RequestBody PlatoCreateDTO dto, @PathVariable Integer id) {
-        if (tipoPlatoRepo.findById(id).isEmpty()) {
+        if (tipoPlatoRepo.findById(dto.id_tipo_plato()).isEmpty()) {
             log.error("No existe un tipo de plato con el id: {}", dto.id_tipo_plato());
             return ResponseEntity.status(400)
                     .body(new MensajeDTO<>(true, false, "No existe un tipo de plato con el id: " + dto.id_tipo_plato()));

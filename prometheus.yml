@@ -1,0 +1,9 @@
+#Prometheus yml
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'springboot-app'
+    metrics_path: '/actuator/prometheus' #Lo que nos dara las metricas
+    static_configs:
+      - targets: ['rest_back:8086'] #la ruta del back definida en el docker-compose

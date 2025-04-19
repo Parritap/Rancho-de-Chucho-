@@ -30,6 +30,8 @@ public class UnidadMedida implements Serializable {
     @OneToMany (mappedBy = "unidadMedida")
     private List<Ingrediente> listaIngredientes;
 
-
+    public UnidadMedida toUnidadMedida(){
+        return UnidadMedida.builder().notacion(this.notacion).nombre(this.nombre).build();
+    }
 
 }

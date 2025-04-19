@@ -2,9 +2,12 @@ package co.edu.uniquindio.pos_resturant_app.controllers;
 
 import co.edu.uniquindio.pos_resturant_app.dto.ingrediente.IngredienteCreateDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.ingrediente.IngredienteReadDTO;
+import co.edu.uniquindio.pos_resturant_app.dto.unidadMedida.UnidadMedidaReadDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.web.MensajeDTO;
 import co.edu.uniquindio.pos_resturant_app.exceptions.CascadeEffectException;
 import co.edu.uniquindio.pos_resturant_app.exceptions.RecordNotFoundException;
+import co.edu.uniquindio.pos_resturant_app.model.UnidadMedida;
+import co.edu.uniquindio.pos_resturant_app.repository.UnidadMedidaRepo;
 import co.edu.uniquindio.pos_resturant_app.services.specifications.IngredienteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +22,12 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/ingrediente")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200")
 @Slf4j
 public class IngredienteController {
 
     private final IngredienteService ingredienteService;
-
+    private final UnidadMedidaRepo unidadMedidaRepo;
     /**
      * saveProduct()
      * # Mapea la funcion IntentoryService.saveProduct() en el front end
@@ -135,4 +138,17 @@ public class IngredienteController {
         }
     }
 
+    @GetMapping("/getUnidadMedida")
+    public ResponseEntity<MensajeDTO<List<UnidadMedida>>> getAllUnidaddes() {
+        try {
+            var unidades = unidadMedidaRepo.findAll().stream().map(UnidadMedida::toUnidadMedida).toList();
+            return ResponseEntity.ok().body(new MensajeDTO<>(false, unidades));
+        } catch (Exception e) {
+            log.error("Error inesperado obteniendo ingredientes: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new MensajeDTO<>(true, null));
+            }
+    }
 }
+
+
