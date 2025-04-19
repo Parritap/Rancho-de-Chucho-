@@ -88,8 +88,12 @@ public class PlatoServiceImp implements PlatoService {
         var entityOptional = platoRepo.findById(id);
         if (entityOptional.isPresent()) {
             var plato = entityOptional.get();
-            plato.setActivo(true);
-            platoRepo.save(plato);
+            if(!plato.isActivo()){
+                plato.setActivo(true);
+                platoRepo.save(plato);
+            }else{
+                throw new RecordNotFoundException("El plato ya se encuentra eliminado: " + id);
+            }
         } else {
             throw new RecordNotFoundException("PLATO con ID: " + id);
         }
