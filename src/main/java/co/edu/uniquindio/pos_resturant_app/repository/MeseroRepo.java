@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface MeseroRepo extends JpaRepository<Mesero, Integer> {
     Optional<Mesero> findByUsername(String username);
+
+    Object findByCedula(String cedula);
 }

@@ -38,9 +38,9 @@ public class Orden implements Serializable {
     private LocalDateTime fechaCierre;  // Nullable, as per your model
 
     @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal subtotal;
+    private BigDecimal subtotal = BigDecimal.ZERO; //Valor con el que empieza la orden al ser creada.
 
     @Column(nullable = false)
-    private BigDecimal impuestos;
+    private BigDecimal impuestos = BigDecimal.ZERO;
 
 }
