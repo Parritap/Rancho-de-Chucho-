@@ -15,12 +15,33 @@ services:
     image: parritap/rest-front
     container_name: rest_front
     depends_on:
-      - back 
+      - back
     ports:
-      - "443:80"  # Ajusta según el puerto de tu contenedor
+      - "443:80"
     networks:
       - rest_net
 
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - rest_net
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - rest_net
+    restart: always
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
 
 networks:
   rest_net:

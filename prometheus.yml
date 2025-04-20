@@ -3,7 +3,7 @@ global:
   scrape_interval: 15s
 
 scrape_configs:
-  - job_name: 'springboot-app'
-    metrics_path: '/actuator/prometheus' #Lo que nos dara las metricas
+  - job_name: 'springboot-backend'
+    metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['rest_back:8086'] #la ruta del back definida en el docker-compose
+      - targets: ['192.168.0.22:8086']  # Cuando se despliegue se cambia 'localHost' cuando se realice el desplieguea
