@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/login")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200")
 @Slf4j
 public class LoginController {
 
     private final MeseroRepo meseroRepo;
     private final FormattingConversionService mvcConversionService;
 
-    @GetMapping("/mesero")
+    @PostMapping("/mesero")
     public ResponseEntity<MensajeDTO<UsuarioReadDTO>> login(@Valid @RequestBody LoginDTO dto) {
         var optional = meseroRepo.findByUsername(dto.username());
         if (optional.isEmpty()) {
