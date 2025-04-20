@@ -1,5 +1,6 @@
 package co.edu.uniquindio.pos_resturant_app.model;
 
+import co.edu.uniquindio.pos_resturant_app.model.joints.OrdenPlato;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,6 +11,8 @@ import lombok.experimental.SuperBuilder;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -42,5 +45,9 @@ public class Orden implements Serializable {
 
     @Column(nullable = false)
     private BigDecimal impuestos = BigDecimal.ZERO;
+
+    @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<OrdenPlato> platos = new ArrayList<>();
+
 
 }

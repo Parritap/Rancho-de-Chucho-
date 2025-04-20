@@ -2,10 +2,13 @@ package co.edu.uniquindio.pos_resturant_app.controllers;
 
 import co.edu.uniquindio.pos_resturant_app.dto.orden.OrdenCreateDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.orden.OrdenReadDTO;
+import co.edu.uniquindio.pos_resturant_app.dto.orden.PlatoOrdenadoDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.web.MensajeDTO;
 import co.edu.uniquindio.pos_resturant_app.model.Mesero;
 import co.edu.uniquindio.pos_resturant_app.model.Orden;
 import co.edu.uniquindio.pos_resturant_app.model.Plato;
+import co.edu.uniquindio.pos_resturant_app.model.joints.OrdenPlato;
+import co.edu.uniquindio.pos_resturant_app.model.keys.OrdenPlatoID;
 import co.edu.uniquindio.pos_resturant_app.repository.MesaRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.MeseroRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.OrdenRepo;
@@ -45,14 +48,12 @@ public class OrdenController {
         try {
             var mesaOpt = mesaRepo.findById(dto.idMesa());
             if (mesaOpt.isEmpty()) {
-                log.error("No se encontró la mesa {}", dto.idMesa());
                 return ResponseEntity.badRequest()
                         .body(new MensajeDTO<>(true, -1, "No existe la mesa especificada"));
             }
 
             var mesero = meseroRepo.findByCedula(dto.cedulaMesero());
             if (mesero == null) {
-                log.error("No se encontró el mesero con cédula {}", dto.cedulaMesero());
                 return ResponseEntity.badRequest()
                         .body(new MensajeDTO<>(true, -1, "No existe el mesero especificado"));
             }
@@ -66,14 +67,12 @@ public class OrdenController {
                             .body(new MensajeDTO<>(true, -1, "No existe el platillo: " + platillo.nombre()));
                 }
 
-                // CONVIERTE el precio (double) a BigDecimal de forma segura
                 BigDecimal precio = BigDecimal.valueOf(plato.get(0).getPrecio());
                 BigDecimal cantidad = BigDecimal.valueOf(platillo.cantidad());
-                BigDecimal precioTotal = precio.multiply(cantidad);
-                subtotal = subtotal.add(precioTotal);
+                subtotal = subtotal.add(precio.multiply(cantidad));
             }
 
-            BigDecimal impuestos = subtotal.multiply(BigDecimal.valueOf(0.19)); // 19%
+            BigDecimal impuestos = subtotal.multiply(BigDecimal.valueOf(0.19));
             Orden nuevaOrden = Orden.builder()
                     .mesa(mesaOpt.get())
                     .mesero((Mesero) mesero)
@@ -82,11 +81,23 @@ public class OrdenController {
                     .impuestos(impuestos)
                     .build();
 
-            Orden ordenGuardada = ordenRepo.save(nuevaOrden);
+            Orden ordenGuardada = ordenRepo.save(nuevaOrden);  // ← Aquí se guarda la orden
 
-            // Aquí puedes guardar el detalle en otra tabla, si existe
+            // 🔽 🔽 Guardamos los platos asociados a la orden
+            for (OrdenCreateDTO.PlatilloCantidadDTO platilloDTO : dto.platillos()) {
+                Plato plato = platoRepo.findByNombre(platilloDTO.nombre()).get(0); // ya validado antes
 
-            log.info("Orden creada con éxito con ID: {}", ordenGuardada.getIdOrden());
+                OrdenPlatoID id = new OrdenPlatoID(ordenGuardada.getIdOrden(), plato.getId_plato());
+
+                OrdenPlato ordenPlato = new OrdenPlato();
+                ordenPlato.setId(id);
+                ordenPlato.setOrden(ordenGuardada);  // ← usamos ordenGuardada
+                ordenPlato.setPlato(plato);
+                ordenPlato.setCantidad(platilloDTO.cantidad());
+
+                ordenPlatoRepo.save(ordenPlato);
+            }
+
             return ResponseEntity.status(201)
                     .body(new MensajeDTO<>(false, ordenGuardada.getIdOrden(), "Orden creada con éxito"));
 
@@ -126,18 +137,23 @@ public class OrdenController {
 
     //Metodo para obtener todas las ordenes
 
-    @GetMapping("getAll")
+    @GetMapping("/getAll")
     public ResponseEntity<MensajeDTO<List<OrdenReadDTO>>> getAll() {
         try {
             List<OrdenReadDTO> dtoList = ordenRepo.findAll().stream()
                     .map(orden -> new OrdenReadDTO(
                             orden.getIdOrden(),
                             orden.getFechaInicio(),
-                            orden.getFechaCierre(),
                             orden.getSubtotal(),
                             orden.getImpuestos(),
                             orden.getMesa().getId(),
-                            orden.getMesero().getCedula()
+                            orden.getMesero().getCedula(),
+                            orden.getPlatos().stream()
+                                    .map(ordenPlato -> new PlatoOrdenadoDTO(
+                                            ordenPlato.getPlato().getNombre(),
+                                            ordenPlato.getCantidad(),
+                                            ordenPlato.getPlato().getPrecio() // Asegúrate que Plato tenga getPrecio()
+                                    )).toList()
                     ))
                     .toList();
 
@@ -148,6 +164,8 @@ public class OrdenController {
                     .body(new MensajeDTO<>(true, null, "Error al obtener las órdenes: " + e.getMessage()));
         }
     }
+
+
 
 
 
