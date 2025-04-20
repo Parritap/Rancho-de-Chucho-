@@ -4,11 +4,15 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record OrdenCreateDTO(
-
-        @NotNull String idMesa,
-        @NotNull String cedulaMesero
-
+        @NotNull Integer idMesa,
+        @NotNull String cedulaMesero,
+        @NotNull List<PlatilloCantidadDTO> platillos //Record anidado para recibir la lista de platillos
 ) {
+    public record PlatilloCantidadDTO(
+            @NotNull String nombre,
+            @NotNull Integer cantidad
+    ) {}
 }
