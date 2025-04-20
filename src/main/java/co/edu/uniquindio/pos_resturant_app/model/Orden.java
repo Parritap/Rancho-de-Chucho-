@@ -1,5 +1,6 @@
 package co.edu.uniquindio.pos_resturant_app.model;
 
+import co.edu.uniquindio.pos_resturant_app.model.enums.EstadoOrden;
 import co.edu.uniquindio.pos_resturant_app.model.joints.OrdenPlato;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -49,5 +50,8 @@ public class Orden implements Serializable {
     @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrdenPlato> platos = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EstadoOrden estado;
 
 }

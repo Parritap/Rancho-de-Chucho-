@@ -1,5 +1,7 @@
 package co.edu.uniquindio.pos_resturant_app.dto.orden;
 
+import co.edu.uniquindio.pos_resturant_app.model.enums.EstadoOrden;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -10,5 +12,6 @@ public record OrdenReadDTO(
         java.math.BigDecimal impuestos,
         Integer idMesa,
         String cedulaMesero,
+        EstadoOrden estadoOrden,
         List<PlatoOrdenadoDTO> platos
 ) {}

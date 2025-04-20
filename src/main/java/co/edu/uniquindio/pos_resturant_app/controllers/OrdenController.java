@@ -7,6 +7,7 @@ import co.edu.uniquindio.pos_resturant_app.dto.web.MensajeDTO;
 import co.edu.uniquindio.pos_resturant_app.model.Mesero;
 import co.edu.uniquindio.pos_resturant_app.model.Orden;
 import co.edu.uniquindio.pos_resturant_app.model.Plato;
+import co.edu.uniquindio.pos_resturant_app.model.enums.EstadoOrden;
 import co.edu.uniquindio.pos_resturant_app.model.joints.OrdenPlato;
 import co.edu.uniquindio.pos_resturant_app.model.keys.OrdenPlatoID;
 import co.edu.uniquindio.pos_resturant_app.repository.MesaRepo;
@@ -79,6 +80,7 @@ public class OrdenController {
                     .fechaInicio(LocalDateTime.now())
                     .subtotal(subtotal)
                     .impuestos(impuestos)
+                    .estado(EstadoOrden.ESPERA)
                     .build();
 
             Orden ordenGuardada = ordenRepo.save(nuevaOrden);  // ← Aquí se guarda la orden
@@ -148,6 +150,7 @@ public class OrdenController {
                             orden.getImpuestos(),
                             orden.getMesa().getId(),
                             orden.getMesero().getCedula(),
+                            orden.getEstado(),
                             orden.getPlatos().stream()
                                     .map(ordenPlato -> new PlatoOrdenadoDTO(
                                             ordenPlato.getPlato().getNombre(),
@@ -165,6 +168,39 @@ public class OrdenController {
         }
     }
 
+    @PutMapping("/cancelar/{idOrden}")
+    public ResponseEntity<MensajeDTO<Boolean>> cancelarOrden(@PathVariable("idOrden") @NotNull Integer idOrden) {
+        log.info("Cancelando la orden con ID {}", idOrden);
+
+        try {
+            var ordenOpt = ordenRepo.findById(idOrden);
+            if (ordenOpt.isEmpty()) {
+                log.error("No se encontró la orden con ID {}", idOrden);
+                return ResponseEntity.badRequest()
+                        .body(new MensajeDTO<>(true, false, "No existe la orden especificada"));
+            }
+
+            Orden orden = ordenOpt.get();
+
+            if (orden.getEstado() == EstadoOrden.FINALIZADA || orden.getEstado() == EstadoOrden.CANCELADA) {
+                return ResponseEntity.badRequest()
+                        .body(new MensajeDTO<>(true, false, "No se puede cancelar una orden finalizada o ya cancelada"));
+            }
+
+            orden.setEstado(EstadoOrden.CANCELADA);
+            orden.setFechaCierre(LocalDateTime.now()); 
+
+            ordenRepo.save(orden);
+
+            log.info("Orden cancelada correctamente");
+            return ResponseEntity.ok(new MensajeDTO<>(false, true, "Orden cancelada correctamente"));
+
+        } catch (Exception e) {
+            log.error("Error inesperado cancelando orden: {}", e.getMessage());
+            return ResponseEntity.status(500)
+                    .body(new MensajeDTO<>(true, false, "Error inesperado cancelando orden: " + e.getMessage()));
+        }
+    }
 
 
 
