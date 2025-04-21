@@ -1,0 +1,30 @@
+name: Database Backup
+
+on:
+  schedule:
+    - cron: '0 3 * * *'  # Daily at 3:00 AM
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute backup on Fedora VM
+        uses: appleboy/ssh-action@master
+        with:
+          host: 45.55.149.182
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            DATE=$(date +"%Y%m%d")
+            # PostgreSQL backup
+            docker exec restaurant-db pg_dump -U postgres restaurant_db > /backups/restaurant_db_$DATE.sql
+            
+            # Compress backup
+            gzip /backups/restaurant_db_$DATE.sql
+            
+            # Upload to cloud storage
+            aws s3 cp /backups/restaurant_db_$DATE.sql.gz s3://restaurant-backups/
+            
+            # Cleanup old backups (keep 7 days)
+            find /backups/ -name "restaurant_db_*.sql.gz" -type f -mtime +7 -delete
