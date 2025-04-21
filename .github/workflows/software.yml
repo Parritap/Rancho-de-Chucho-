@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-build-deploy:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,41 +26,12 @@ jobs:
     - name: Run Spring tests
       run: ./gradlew test
 
-    # Deploy to VM only if tests passed
-    - name: Setup SSH key
-      if: success()
-      uses: webfactory/ssh-agent@v0.8.0
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to production
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.MY_RENDER_SERVICE_ID }}
+          api-key: ${{ secrets.MY_RENDER_API_KEY }}
 
-    - name: Copy project to Fedora VM
-      if: success()
-      run: |
-        # Add host key to known_hosts to avoid prompt
-        mkdir -p ~/.ssh
-        ssh-keyscan -H 45.55.149.182 >> ~/.ssh/known_hosts
-        
-        # Create directory and copy project files
-        ssh ${{ secrets.SSH_USER }}@45.55.149.182 "mkdir -p ~/restaurant-app"
-        rsync -avz --exclude='.git' --exclude='.github' --exclude='build' --exclude='.gradle' ./ ${{ secrets.SSH_USER }}@45.55.149.182:~/restaurant-app/
-
-    - name: Build project and run Docker container
-      if: success()
-      uses: appleboy/ssh-action@master
-      with:
-        host: 45.55.149.182
-        username: ${{ secrets.SSH_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          cd ~/restaurant-app
-          
-          # Build the project
-          ./gradlew build -x test
-          
-          # Stop running containers and remove old images (optional)
-          docker-compose down
-          
-          # Build and run with docker-compose
-          docker-compose up -d
-          
-          echo "Deployment completed successfully!"
