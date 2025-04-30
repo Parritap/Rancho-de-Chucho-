@@ -1,37 +1,37 @@
-name: Test and Deploy to Fedora VM
+name: Deploy to Server
 
 on:
   push:
-    branches: [ master ]
-  workflow_dispatch:
+    branches:
+      - master  # Trigger the action on a push to the 'master' branch
 
 jobs:
-  test:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up JDK
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: gradle
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x ./gradlew
-
-    - name: Run Spring tests
-      run: ./gradlew test
-
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to production
-        uses: johnbeynon/render-deploy-action@v0.0.8
-        with:
-          service-id: ${{ secrets.MY_RENDER_SERVICE_ID }}
-          api-key: ${{ secrets.MY_RENDER_API_KEY }}
-
+      - name: SSH into server and deploy application
+        run: |
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << EOF
+            cd /var/www/your-app
+          
+            # Set GitHub credentials using GITHUB_TOKEN
+            git config --global credential.helper store
+            echo "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" > ~/.git-credentials
+          
+            # Pull the latest code from the repository
+            git pull origin master
+          
+            # Install dependencies
+            pip install -r /var/www/your-app/requirements.txt
+          
+            # Restart the service
+            sudo systemctl stop your-app
+            sudo systemctl start your-app
+          EOF
