@@ -4,6 +4,7 @@ import co.edu.uniquindio.pos_resturant_app.model.Ingrediente;
 import co.edu.uniquindio.pos_resturant_app.model.Plato;
 import co.edu.uniquindio.pos_resturant_app.model.UnidadMedida;
 import co.edu.uniquindio.pos_resturant_app.model.keys.IngredientePlatoID;
+import co.edu.uniquindio.pos_resturant_app.repository.UnidadMedidaRepo;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -40,7 +41,12 @@ public class IngredientePlato implements Serializable {
     @Min(value = 0)
     @Column(nullable = false)
     @NotNull
-    private Integer cantidad;
+    private Float cantidad;
+
+    @ManyToOne
+    @JoinColumn (name = "id_unidad_medida", referencedColumnName = "notacion" , nullable = false)
+    private UnidadMedida unidadMedida;
+
 
 //    @ManyToOne
 //    @NotNull

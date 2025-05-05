@@ -28,6 +28,7 @@ public class IngredienteController {
 
     private final IngredienteService ingredienteService;
     private final UnidadMedidaRepo unidadMedidaRepo;
+
     /**
      * saveProduct()
      * # Mapea la funcion IntentoryService.saveProduct() en el front end
@@ -36,7 +37,7 @@ public class IngredienteController {
      * @param dto
      * @return MensajeDTO con el id del ingrediente creado
      * @throws RecordNotFoundException si la unidad de medida no existe
-     * @throws Exception si ocurre un error inesperado
+     * @throws Exception               si ocurre un error inesperado
      */
     @PostMapping("/save")
     public ResponseEntity<MensajeDTO<Integer>> create(@Valid @RequestBody IngredienteCreateDTO dto) {
@@ -72,12 +73,8 @@ public class IngredienteController {
      */
     @PutMapping("/updateStock/{id}/{cantidad}/")
     public ResponseEntity<MensajeDTO<Boolean>> editStock(@PathVariable String id, @PathVariable int cantidad) throws Exception {
-        var succcess = ingredienteService.addStock(id, cantidad);
-        if (succcess) {
-            return ResponseEntity.ok(new MensajeDTO<>(true, false));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        ingredienteService.addStock(id, cantidad);
+        return ResponseEntity.ok(new MensajeDTO<>(true, false));
     }
 
     // editProduct()
@@ -103,10 +100,11 @@ public class IngredienteController {
 
     /**
      * Method for deleting an ingredient. And ingredient can only be deleted if it is not used in any recipe.
+     *
      * @param id
-     * @throws RecordNotFoundException if the ingredient with specified id does not exist
-     * @throws CascadeEffectException if the ingredient is used in any recipe
      * @return MensajeDTO with a boolean indicating if the ingredient was deleted or not
+     * @throws RecordNotFoundException if the ingredient with specified id does not exist
+     * @throws CascadeEffectException  if the ingredient is used in any recipe
      */
     @DeleteMapping("/{id}/delete")
     public ResponseEntity<MensajeDTO<Boolean>> delete(@PathVariable Integer id) {
@@ -147,7 +145,7 @@ public class IngredienteController {
             log.error("Error inesperado obteniendo ingredientes: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new MensajeDTO<>(true, null));
-            }
+        }
     }
 }
 

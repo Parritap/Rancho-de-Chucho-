@@ -1,13 +1,18 @@
 package co.edu.uniquindio.pos_resturant_app.services.implementations;
 
+import co.edu.uniquindio.pos_resturant_app.dto.joints.IngredienteAtom;
 import co.edu.uniquindio.pos_resturant_app.dto.plato.PlatoCreateDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.plato.PlatoReadDTO;
 import co.edu.uniquindio.pos_resturant_app.exceptions.CascadeEffectException;
+import co.edu.uniquindio.pos_resturant_app.exceptions.DuplicatedRecordException;
 import co.edu.uniquindio.pos_resturant_app.exceptions.RecordNotFoundException;
 import co.edu.uniquindio.pos_resturant_app.model.Plato;
-import co.edu.uniquindio.pos_resturant_app.model.TipoPlato;
+import co.edu.uniquindio.pos_resturant_app.model.joints.IngredientePlato;
+import co.edu.uniquindio.pos_resturant_app.repository.IngredienteRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.PlatoRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.TipoPlatoRepo;
+import co.edu.uniquindio.pos_resturant_app.repository.UnidadMedidaRepo;
+import co.edu.uniquindio.pos_resturant_app.repository.joints.IngredientePlatoRepo;
 import co.edu.uniquindio.pos_resturant_app.services.specifications.PlatoService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,25 +27,47 @@ public class PlatoServiceImp implements PlatoService {
 
     private final PlatoRepo platoRepo;
     private final TipoPlatoRepo tipoPlatoRepo;
+    private final IngredientePlatoRepo ingredientePlatoRepo;
+    private final IngredienteRepo ingredienteRepo;
+    private final UnidadMedidaRepo unidadMedidaRepo;
 
 
     @Override
     public int create(PlatoCreateDTO dto) throws RecordNotFoundException, Exception {
 
+        //Verificamos si el plato no es un duplicado
+        if (!platoRepo.findByNombre(dto.nombre()).isEmpty()) {
+            throw new DuplicatedRecordException("Ya existe un plato con el nombre: " + dto.nombre());
+        }
+
         // Check if tipoPlato exists
         // En teoría siempre debe exitir el tipo plato porque los tipos se cargan en el front con base a lo que hay en la db
-        var tipoPlato = tipoPlatoRepo.findById(dto.id_tipo_plato()).orElseThrow(
-                () -> new RecordNotFoundException("Tipo de plato no encontrado")
+        tipoPlatoRepo.findById(dto.id_tipo_plato()).orElseThrow(
+                () -> new RecordNotFoundException("Tipo de plato con ID " + dto.id_tipo_plato() + " no encontrado")
         );
 
-        try {
-            var entity = dto.toEntity();
-            // Ensure the entity has the correct tipoPlato reference
-            entity.setTipoPlato(tipoPlato);
-            return platoRepo.save(entity).getId_plato();
-        } catch (Exception e) {
-            throw new Exception("Error creating dish: " + e.getMessage(), e);
+        // Agregamos el plato a la basede datos para luego hacer la relación en la tabla IngredientePlato
+        Plato plato = dto.toEntity();
+        var platoEntity = platoRepo.save(plato);
+
+        // Por cada IngredienteAtom encontrado en el PlatoCreateDTO agregamos la relación en IngredientePlato
+        for (IngredienteAtom atom : dto.listaIngredientes()) {
+
+            var unidadMedidadEntity = unidadMedidaRepo.findById(atom.notacionUnidadMedida()).orElseThrow(
+                    () -> new RecordNotFoundException("Unidad de medida  " + atom.notacionUnidadMedida() + " no encontrado")
+            );
+
+            var ingredienteEntity = ingredienteRepo.findById(atom.idIngrediente()).orElseThrow(
+                    () -> new RecordNotFoundException("Ingrediente " + atom.idIngrediente() + " no encontrado")
+            );
+            var ingredientePlato = IngredientePlato.builder()
+                    .ingrediente(ingredienteEntity)
+                    .plato(platoEntity)
+                    .cantidad(atom.cantidad())
+                    .unidadMedida(unidadMedidadEntity)
+                    .build();
         }
+        return platoEntity.getId_plato();
     }
 
     @Override
@@ -88,10 +115,10 @@ public class PlatoServiceImp implements PlatoService {
         var entityOptional = platoRepo.findById(id);
         if (entityOptional.isPresent()) {
             var plato = entityOptional.get();
-            if(!plato.isActivo()){
+            if (!plato.isActivo()) {
                 plato.setActivo(true);
                 platoRepo.save(plato);
-            }else{
+            } else {
                 throw new RecordNotFoundException("El plato ya se encuentra eliminado: " + id);
             }
         } else {
@@ -102,14 +129,16 @@ public class PlatoServiceImp implements PlatoService {
     }
 
     @Override
-    public PlatoCreateDTO findById(Integer id) throws RecordNotFoundException, Exception {
+    public PlatoReadDTO findById(Integer id) throws RecordNotFoundException, Exception {
         Plato plato = platoRepo.findById(id)
-            .orElseThrow(() -> new RecordNotFoundException("PLATO: " + id));
-        return new PlatoCreateDTO(
-            plato.getNombre(),
-            plato.getDescripcion(),
-            plato.getPrecio(),
-            plato.getTipoPlato().getId_tipo_plato()
+                .orElseThrow(() -> new RecordNotFoundException("PLATO: " + id));
+        return new PlatoReadDTO(
+                plato.getId_plato(),
+                plato.getNombre(),
+                plato.getDescripcion(),
+                plato.getPrecio(),
+                plato.getTipoPlato().getNombre(),
+                plato.isActivo()
         );
     }
 

@@ -49,7 +49,7 @@ public interface PlatoService {
      * @throws RecordNotFoundException If dish with given ID doesn't exist
      * @throws Exception               For other errors
      */
-    PlatoCreateDTO findById(Integer id) throws RecordNotFoundException, Exception;
+    PlatoReadDTO findById(Integer id) throws RecordNotFoundException, Exception;
 
     /**
      * Gets all dishes

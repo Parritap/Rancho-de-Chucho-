@@ -20,12 +20,12 @@ public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
 
-    @ExceptionHandler(RecordNotFoundException.class)
+    @ExceptionHandler(value = {RecordNotFoundException.class})
     public ResponseEntity<ErrorResponse> handleRecordNotFoundException(
             RecordNotFoundException ex, HttpServletRequest request) {
 
         ErrorResponse error = ErrorResponse.builder().
-                errorCode("ENTITY_NOT_FOUND").
+                errorCode(ERROR_CODE.ENTITY_NOT_FOUND.value()).
                 message(ex.getMessage()).
                 timestamp(LocalDateTime.now()).
                 build();
@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DuplicatedRecordException.class)
     public ResponseEntity<ErrorResponse> handleDuplicatedRecordException(
-            DuplicatedRecordException ex, HttpServletRequest request) {
+            DuplicatedRecordException ex) {
 
         ErrorResponse error = ErrorResponse.builder().
                 errorCode("ENTITY_NOT_FOUND").
@@ -47,6 +47,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
+    /**
+     * Captures MethodArgumentNotValidException exceptions that occur when request
+     * data fails validation (like when fields in request bodies don't meet
+     * requirements defined by annotations like @NotNull, @Size, etc.)
+     *
+     * @param ex
+     * @param request
+     * @return
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(
             MethodArgumentNotValidException ex, HttpServletRequest request) {

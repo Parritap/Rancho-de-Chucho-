@@ -27,6 +27,7 @@ public class PlatoController {
     public ResponseEntity<MensajeDTO<Integer>> create(@Valid @RequestBody PlatoCreateDTO dto) {
 
         if (tipoPlatoRepo.findById(dto.id_tipo_plato()).isEmpty()) {
+            // TODO Make Slf4j write logs in a txt so we can maintain persistences of incidents
             log.error("No existe un tipo de plato con el id: {}", dto.id_tipo_plato());
             return ResponseEntity.status(400)
                     .body(new MensajeDTO<>(true, -1, "No existe un tipo de plato con el id: " + dto.id_tipo_plato()));
@@ -81,9 +82,9 @@ public class PlatoController {
     }
 
     @GetMapping("{id}/find")
-    public ResponseEntity<MensajeDTO<PlatoCreateDTO>> findById(@PathVariable Integer id) {
+    public ResponseEntity<MensajeDTO<PlatoReadDTO>> findById(@PathVariable Integer id) {
         try {
-            PlatoCreateDTO plato = platoService.findById(id);
+            PlatoReadDTO plato = platoService.findById(id);
             return ResponseEntity.ok(new MensajeDTO<>(false, plato));
         } catch (Exception e) {
             log.error("Error inesperado buscando plato, revise si el plato con id {} existe en la base de datos: {}", id, e.getMessage());

@@ -83,7 +83,7 @@ public class IngredienteServiceImp implements IngredienteService {
     }
 
     @Override
-    public IngredienteCreateDTO findById(String id) throws Exception {
+    public IngredienteCreateDTO findById(String id) throws RecordNotFoundException {
         return null;
     }
 
@@ -95,7 +95,7 @@ public class IngredienteServiceImp implements IngredienteService {
     }
 
     @Override
-    public boolean addStock(String id, int cantidad) throws Exception {
+    public boolean addStock(String id, int cantidad) throws RecordNotFoundException {
         var ingrediente = ingredienteRepo.findById(Integer.parseInt(id)).orElseThrow(() -> new RecordNotFoundException("Ingrediente con Id " + id + " no encontrado"));
         ingrediente.setCantidadDisponible(ingrediente.getCantidadDisponible() + cantidad);
         ingredienteRepo.save(ingrediente);

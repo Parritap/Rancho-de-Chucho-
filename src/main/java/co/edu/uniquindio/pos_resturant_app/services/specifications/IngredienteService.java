@@ -21,7 +21,7 @@ public interface IngredienteService {
     boolean delete(Integer id) throws Exception, CascadeEffectException, RecordNotFoundException;
 
     //
-    IngredienteCreateDTO findById(String id) throws Exception;
+    IngredienteCreateDTO findById(String id) throws RecordNotFoundException;
 
     //make a get all method to retrieve all the ingredients
     List<IngredienteReadDTO> getAll() throws Exception;
