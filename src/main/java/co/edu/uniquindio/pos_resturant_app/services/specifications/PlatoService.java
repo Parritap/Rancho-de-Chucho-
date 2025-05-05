@@ -16,7 +16,7 @@ public interface PlatoService {
      * @return The ID of the created dish
      * @throws Exception If there's an error during creation
      */
-    int create(PlatoCreateDTO plato) throws Exception;
+    Integer create(PlatoCreateDTO plato) throws Exception;
 
     /**
      * Updates an existing dish

@@ -12,6 +12,6 @@ import java.util.Objects;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class IngredientePlatoID implements Serializable {
-    private int idPlato;
-    private int idIngrediente;
+    private Integer idPlato;
+    private Integer idIngrediente;
 }

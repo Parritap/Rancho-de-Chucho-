@@ -3,11 +3,13 @@ package co.edu.uniquindio.pos_resturant_app.controllers;
 import co.edu.uniquindio.pos_resturant_app.dto.plato.PlatoCreateDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.plato.PlatoReadDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.web.MensajeDTO;
+import co.edu.uniquindio.pos_resturant_app.exceptions.RecordNotFoundException;
 import co.edu.uniquindio.pos_resturant_app.repository.TipoPlatoRepo;
 import co.edu.uniquindio.pos_resturant_app.services.specifications.PlatoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,29 +26,18 @@ public class PlatoController {
     private final TipoPlatoRepo tipoPlatoRepo;
 
     @PostMapping("/save")
-    public ResponseEntity<MensajeDTO<Integer>> create(@Valid @RequestBody PlatoCreateDTO dto) {
+    public ResponseEntity<MensajeDTO<Integer>> create(@Valid @RequestBody PlatoCreateDTO dto) throws RecordNotFoundException {
 
         if (tipoPlatoRepo.findById(dto.id_tipo_plato()).isEmpty()) {
-            // TODO Make Slf4j write logs in a txt so we can maintain persistences of incidents
-            log.error("No existe un tipo de plato con el id: {}", dto.id_tipo_plato());
-            return ResponseEntity.status(400)
-                    .body(new MensajeDTO<>(true, -1, "No existe un tipo de plato con el id: " + dto.id_tipo_plato()));
+            throw new RecordNotFoundException("Tipo plato con ID" + dto.id_tipo_plato() + " no encontrado");
         }
-
+        Integer id = -1;
         try {
-            int entityId = platoService.create(dto);
-            if (entityId > 0) {
-                return ResponseEntity.status(201)
-                        .body(new MensajeDTO<>(false, entityId));
-            } else {
-                return ResponseEntity.badRequest()
-                        .body(new MensajeDTO<>(true, -1));
-            }
-        } catch (Exception e) {
-            log.error("Error inesperado creando plato: {}", e.getMessage());
-            return ResponseEntity.status(500)
-                    .body(new MensajeDTO<>(true, -1));
+           id = platoService.create(dto);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
+        return ResponseEntity.ok(new MensajeDTO<>(false, id));
     }
 
     @PutMapping("/{id}/update")

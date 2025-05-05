@@ -8,6 +8,7 @@ import co.edu.uniquindio.pos_resturant_app.exceptions.DuplicatedRecordException;
 import co.edu.uniquindio.pos_resturant_app.exceptions.RecordNotFoundException;
 import co.edu.uniquindio.pos_resturant_app.model.Plato;
 import co.edu.uniquindio.pos_resturant_app.model.joints.IngredientePlato;
+import co.edu.uniquindio.pos_resturant_app.model.keys.IngredientePlatoID;
 import co.edu.uniquindio.pos_resturant_app.repository.IngredienteRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.PlatoRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.TipoPlatoRepo;
@@ -33,7 +34,7 @@ public class PlatoServiceImp implements PlatoService {
 
 
     @Override
-    public int create(PlatoCreateDTO dto) throws RecordNotFoundException, Exception {
+    public Integer create(PlatoCreateDTO dto) throws RecordNotFoundException, Exception {
 
         //Verificamos si el plato no es un duplicado
         if (!platoRepo.findByNombre(dto.nombre()).isEmpty()) {
@@ -48,6 +49,7 @@ public class PlatoServiceImp implements PlatoService {
 
         // Agregamos el plato a la basede datos para luego hacer la relación en la tabla IngredientePlato
         Plato plato = dto.toEntity();
+        plato.setTipoPlato(tipoPlatoRepo.findById(dto.id_tipo_plato()).get());
         var platoEntity = platoRepo.save(plato);
 
         // Por cada IngredienteAtom encontrado en el PlatoCreateDTO agregamos la relación en IngredientePlato
@@ -61,11 +63,14 @@ public class PlatoServiceImp implements PlatoService {
                     () -> new RecordNotFoundException("Ingrediente " + atom.idIngrediente() + " no encontrado")
             );
             var ingredientePlato = IngredientePlato.builder()
+                    .id(new IngredientePlatoID())
                     .ingrediente(ingredienteEntity)
                     .plato(platoEntity)
                     .cantidad(atom.cantidad())
                     .unidadMedida(unidadMedidadEntity)
                     .build();
+
+            ingredientePlatoRepo.save(ingredientePlato);
         }
         return platoEntity.getId_plato();
     }
