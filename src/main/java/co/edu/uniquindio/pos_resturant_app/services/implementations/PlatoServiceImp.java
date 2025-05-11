@@ -83,7 +83,7 @@ public class PlatoServiceImp implements PlatoService {
 
         // Update tipoPlato if necessary
         var tipoPlato = tipoPlatoRepo.findById(dto.id_tipo_plato())
-                .orElseThrow(() -> new RecordNotFoundException("TIPO PLATO: " + dto.id_tipo_plato()));// TODO Esto en teoría nunca debería de suceder
+                .orElseThrow(() -> new RecordNotFoundException("TIPO PLATO: " + dto.id_tipo_plato()));//
 
         try {
             platoEntity.setNombre(dto.nombre());

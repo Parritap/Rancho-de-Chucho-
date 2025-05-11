@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface MeseroRepo extends JpaRepository<Mesero, Integer> {
+public interface MeseroRepo extends JpaRepository<Mesero, String> {
     Optional<Mesero> findByUsername(String username);
 
     Object findByCedula(String cedula);
