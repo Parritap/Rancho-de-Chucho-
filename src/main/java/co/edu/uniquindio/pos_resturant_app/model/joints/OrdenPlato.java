@@ -4,9 +4,11 @@ import co.edu.uniquindio.pos_resturant_app.model.Orden;
 import co.edu.uniquindio.pos_resturant_app.model.Plato;
 import co.edu.uniquindio.pos_resturant_app.model.keys.OrdenPlatoID;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 
@@ -15,6 +17,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Setter
 @Table(name = "orden_plato")
+@SuperBuilder
 public class OrdenPlato implements Serializable {
 
     @EmbeddedId
