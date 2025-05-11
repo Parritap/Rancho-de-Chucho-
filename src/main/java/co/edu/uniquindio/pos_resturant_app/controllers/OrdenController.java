@@ -29,7 +29,6 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/orden")
-@CrossOrigin(origins = {"http://localhost:4200", "*"})
 @Slf4j
 public class OrdenController {
     private final OrdenRepo ordenRepo;
@@ -151,7 +150,7 @@ public class OrdenController {
                             orden.getMesa().getId(),
                             orden.getMesero().getCedula(),
                             orden.getEstado(),
-                            orden.getPlatos().stream()
+                            orden.getListaDetalles().stream()
                                     .map(ordenPlato -> new PlatoOrdenadoDTO(
                                             ordenPlato.getPlato().getNombre(),
                                             ordenPlato.getCantidad(),

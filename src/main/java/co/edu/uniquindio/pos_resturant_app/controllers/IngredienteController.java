@@ -22,7 +22,6 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/ingrediente")
-@CrossOrigin(origins = {"http://localhost:4200", "*"})
 @Slf4j
 public class IngredienteController {
 
