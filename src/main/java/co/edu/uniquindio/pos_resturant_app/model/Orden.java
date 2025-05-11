@@ -48,7 +48,7 @@ public class Orden implements Serializable {
     private BigDecimal impuestos = BigDecimal.ZERO;
 
     @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<OrdenPlato> platos = new ArrayList<>();
+    private List<OrdenPlato> listaDetalles = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -5,33 +5,33 @@ on:
     branches:
       - master  # Trigger the action on a push to the 'master' branch
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Install sshpass
-        run: sudo apt-get install -y sshpass
-
-      - name: SSH into server and deploy application
-        run: |
-          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << EOF
-            cd /var/www/your-app
-          
-            # Set GitHub credentials using GITHUB_TOKEN
-            git config --global credential.helper store
-            echo "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" > ~/.git-credentials
-          
-            # Pull the latest code from the repository
-            git pull origin master
-          
-            # Install dependencies
-            pip install -r /var/www/your-app/requirements.txt
-          
-            # Restart the service
-            sudo systemctl stop your-app
-            sudo systemctl start your-app
-          EOF
+#jobs:
+#  deploy:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#
+#      - name: Install sshpass
+#        run: sudo apt-get install -y sshpass
+#
+#      - name: SSH into server and deploy application
+#        run: |
+#          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << EOF
+#            cd /var/www/your-app
+#
+#            # Set GitHub credentials using GITHUB_TOKEN
+#            git config --global credential.helper store
+#            echo "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" > ~/.git-credentials
+#
+#            # Pull the latest code from the repository
+#            git pull origin master
+#
+#            # Install dependencies
+#            pip install -r /var/www/your-app/requirements.txt
+#
+#            # Restart the service
+#            sudo systemctl stop your-app
+#            sudo systemctl start your-app
+#          EOF
