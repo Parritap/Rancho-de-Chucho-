@@ -14,7 +14,8 @@ public record OrdenCreateDTO(
         @NotNull List<PlatilloCantidadDTO> platillos //Record anidado para recibir la lista de platillos
 ) {
     public record PlatilloCantidadDTO(
-            @NotNull String nombre,
+            @NotNull Integer idPlato,
             @NotNull Integer cantidad
-    ) {}
+    ) {
+    }
 }

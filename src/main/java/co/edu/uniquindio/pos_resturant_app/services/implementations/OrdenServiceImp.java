@@ -1,8 +1,8 @@
 package co.edu.uniquindio.pos_resturant_app.services.implementations;
 
 import co.edu.uniquindio.pos_resturant_app.dto.joints.OrdenPlatoDTO;
+import co.edu.uniquindio.pos_resturant_app.dto.orden.OrdenCreateDTO;
 import co.edu.uniquindio.pos_resturant_app.exceptions.RecordNotFoundException;
-import co.edu.uniquindio.pos_resturant_app.model.Mesa;
 import co.edu.uniquindio.pos_resturant_app.model.Orden;
 import co.edu.uniquindio.pos_resturant_app.model.enums.EstadoOrden;
 import co.edu.uniquindio.pos_resturant_app.model.enums.Finance;
@@ -15,10 +15,13 @@ import co.edu.uniquindio.pos_resturant_app.repository.PlatoRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.joints.OrdenPlatoRepo;
 import co.edu.uniquindio.pos_resturant_app.services.specifications.OrdenService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 // Yo a veces me pregunto si deberia hacer tantas validaciones... pero es que no me  gusta asumir.
 
@@ -26,6 +29,7 @@ import java.util.Optional;
  * IMPORTANTE: En el contexto de esta clase DETALLE se refiere a la relacion entre orden y plato.
  * Es decir, detalle es un registro de la tabla orden_plato.
  */
+@Service
 @RequiredArgsConstructor
 public class OrdenServiceImp implements OrdenService {
     private final MesaRepo mesaRepo;
@@ -35,14 +39,14 @@ public class OrdenServiceImp implements OrdenService {
     private final OrdenPlatoRepo ordenPlatoRepo;
 
     /**
-     * Este metodo crea una orden y la asocia a una mesa y un mesero
+     * Este metodo crea una orden y la asocia a una mesa y un mesero y la guarda en la base de datos.
      *
      * @param idMesa
      * @param cedulaMesero
      * @return El id de la orden generado por la base de datos.
      */
-    @Override
-    public Integer create(Integer idMesa, String cedulaMesero) {
+
+    private Orden create_aux(Integer idMesa, String cedulaMesero) {
 
         var mesaEntity = mesaRepo.findById(idMesa).orElseThrow(
                 () -> new RecordNotFoundException("Mesa con  id:" + idMesa + " no encontrado"));
@@ -56,53 +60,110 @@ public class OrdenServiceImp implements OrdenService {
                 .estado(EstadoOrden.PROCESO)
                 .build();
 
-        return ordenRepo.save(ordenEntity).getIdOrden();
+        return ordenRepo.save(ordenEntity);
     }
 
 
     /**
+     * Función que abre una orden
      * DETALLE es un registro de la tabla orden_plato.
+     * La tabla que estamos afectando aquí es Orden (creación) y OrdenPlato mediante
+     * la adición de un nuevo registro que relaciona a la orden
+     * con un nuevo plato y la respectiva cantidad del mismo.
      *
-     * @param dto
+     * @param dto que contiene el id de la mesa, id del mesero y una lista de
+     *            PlatiCantidadDTO con el id y la cantidad de cada plantillo ingresado
      * @return true si se pudo agregar el detalle a la orden.
      */
-    boolean addDetail(OrdenPlatoDTO dto) {
+    @Override
+    public Integer openOrden(OrdenCreateDTO dto) {
+
+        //Creamos la intancia inicila vacía de la entidad.
+
+        var ordenEntity = create_aux(dto.idMesa(), dto.cedulaMesero());
+
+        dto.platillos().forEach(plato -> {
+
+            //Check if platillo exists
+            var platoEntity = platoRepo.findById(plato.idPlato()).orElseThrow(
+                    () -> new RecordNotFoundException("Plato con id:" + plato.idPlato() + " no encontrado"));
+
+
+            //If so, then create a ordenPlatoEntity
+            var ordenPlatoEntity = OrdenPlato.builder()
+                    .id(new OrdenPlatoID())
+                    .plato(platoEntity)
+                    .orden(ordenEntity)
+                    .cantidad(plato.cantidad())
+                    .build();
+
+            ordenPlatoRepo.save(ordenPlatoEntity);
+        });
+
+        return ordenEntity.getIdOrden();
+    }
+
+
+    /**
+     * Edita un detalle de la orden según el idPlato
+     *
+     * @param dto
+     * @return
+     */
+    @Override
+    public Boolean editQuantityDetail(OrdenPlatoDTO dto) {
         //lets check if dto.orden and dto.plato do exist in the database
         var ordenEntity = ordenRepo.findById(dto.idOrden()).orElseThrow(
                 () -> new RecordNotFoundException("Orden con id:" + dto.idOrden() + " no encontrado"));
 
-        var platoEntity = platoRepo.findById(dto.idPlato()).orElseThrow(
-                () -> new RecordNotFoundException("Plato con id:" + dto.idPlato() + " no encontrado"));
-
-
-        var entity = OrdenPlato.builder()
-                .id(new OrdenPlatoID())
-                .orden(ordenEntity)
-                .plato(platoEntity)
-                .cantidad(dto.cantidad())
-                .build();
-
-        ordenPlatoRepo.save(entity);
-        return true;
-    }
-
-
-    boolean editQuantityDetail(OrdenPlatoDTO dto) {
-        //lets check if dto.orden and dto.plato do exist in the database
-        var ordenEntity = ordenRepo.findById(dto.idOrden()).orElseThrow(
-                () -> new RecordNotFoundException("Orden con id:" + dto.idOrden() + " no encontrado"));
+        if (ordenEntity.getEstado() == EstadoOrden.FINALIZADA ||
+                ordenEntity.getEstado() == EstadoOrden.CANCELADA) throw new DataIntegrityViolationException(
+                "La orden no puede ser modificada, su estado es: " + ordenEntity.getEstado()
+        );
 
         var platoEntity = platoRepo.findById(dto.idPlato()).orElseThrow(
                 () -> new RecordNotFoundException("Plato con id:" + dto.idPlato() + " no encontrado"));
 
-        var entity = OrdenPlato.builder()
-                .id(new OrdenPlatoID())
-                .orden(ordenEntity)
-                .plato(platoEntity)
-                .build();
+        // La siguiente línea tiene una excepción (EntityNotFoundException) la cual es controlada por GlobalExceptionHandler.
+        var ordenPlato = ordenPlatoRepo.findByIdPlatoAndIdOrden(platoEntity.getId_plato(), ordenEntity.getIdOrden());
+        ordenPlato.setCantidad(dto.cantidad());
+        ordenPlatoRepo.save(ordenPlato);
 
-        ordenPlatoRepo.save(entity);
         return true;
     }
+
+    @Override
+    public Boolean closeOrden(Integer idOrden) {
+        var entity = ordenRepo.findById(idOrden).orElseThrow(
+                () -> new RecordNotFoundException("Orden con ID: " + idOrden + " no encontrada")
+        );
+
+        entity.setFechaCierre(LocalDateTime.now());
+
+        var listaDetalles = ordenPlatoRepo.findbyIdOrden(entity.getIdOrden());
+        var subtotal = calcularSubTotal(listaDetalles);
+        var impuestos = calcularImpuestos(subtotal);
+        entity.setSubtotal(subtotal);
+        entity.setImpuestos(impuestos);
+        entity.setTotal(subtotal.add(impuestos));
+
+        ordenRepo.save(entity);
+
+        return true;
+    }
+
+
+    private BigDecimal calcularSubTotal(List<OrdenPlato> listaDetalles) {
+        // Calculate subtotal using streams instead of modifying a variable in lambda
+        return listaDetalles.stream()
+                .map(detalle -> BigDecimal.valueOf(detalle.getPlato().getPrecio())
+                        .multiply(BigDecimal.valueOf(detalle.getCantidad())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private BigDecimal calcularImpuestos(BigDecimal subtotal) {
+        return subtotal.multiply(BigDecimal.valueOf(Finance.IVA.value()));
+    }
+
 
 }

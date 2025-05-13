@@ -1,6 +1,13 @@
 package co.edu.uniquindio.pos_resturant_app.services.specifications;
 
+import co.edu.uniquindio.pos_resturant_app.dto.joints.OrdenPlatoDTO;
+import co.edu.uniquindio.pos_resturant_app.dto.orden.OrdenCreateDTO;
+
 public interface OrdenService {
 
-    Integer create(Integer idMesa, String cedulaMesero);
+    Integer openOrden(OrdenCreateDTO dto);
+
+    Boolean closeOrden (Integer idOrden);
+
+    Boolean editQuantityDetail (OrdenPlatoDTO ordenPlatoDTO);
 }

@@ -47,11 +47,13 @@ public class Orden implements Serializable {
     @Column(nullable = false)
     private BigDecimal impuestos = BigDecimal.ZERO;
 
+    @Column(nullable = false)
+    private BigDecimal total = BigDecimal.ZERO;
+
     @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrdenPlato> listaDetalles = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EstadoOrden estado;
-
 }
