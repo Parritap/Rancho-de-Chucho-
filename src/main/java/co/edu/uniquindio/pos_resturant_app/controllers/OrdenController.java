@@ -64,6 +64,9 @@ public class OrdenController {
         );
     }
 
+    @PutMapping
+    public ResponseEntity<MensajeDTO<Boolean>> editQuantityDetail ()
+
 
 
     //Metodo para obtener todas las ordenes

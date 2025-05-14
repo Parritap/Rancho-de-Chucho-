@@ -3,10 +3,7 @@ package co.edu.uniquindio.pos_resturant_app.model;
 import co.edu.uniquindio.pos_resturant_app.model.enums.EstadoOrden;
 import co.edu.uniquindio.pos_resturant_app.model.joints.OrdenPlato;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
@@ -42,15 +39,19 @@ public class Orden implements Serializable {
     private LocalDateTime fechaCierre;  // Nullable, as per your model
 
     @Column(nullable = false, precision = 10, scale = 2)
+    @Builder.Default
     private BigDecimal subtotal = BigDecimal.ZERO; //Valor con el que empieza la orden al ser creada.
 
     @Column(nullable = false)
+    @Builder.Default
     private BigDecimal impuestos = BigDecimal.ZERO;
 
     @Column(nullable = false)
+    @Builder.Default
     private BigDecimal total = BigDecimal.ZERO;
 
     @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
     private List<OrdenPlato> listaDetalles = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)

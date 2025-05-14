@@ -1,0 +1,19 @@
+
+
+{
+  "idMesa": 1,
+  "cedulaMesero": "1111",
+  "platillos": [
+    {
+      "idPlato": 1,
+      "cantidad": 2
+    },
+    {
+      "idPlato": 2,
+      "cantidad": 5
+    }
+  ]
+}
+
+
+
