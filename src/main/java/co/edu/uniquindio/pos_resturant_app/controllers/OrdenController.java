@@ -11,6 +11,7 @@ import co.edu.uniquindio.pos_resturant_app.repository.MeseroRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.OrdenRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.PlatoRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.joints.OrdenPlatoRepo;
+import co.edu.uniquindio.pos_resturant_app.response.OrdenResponseSet;
 import co.edu.uniquindio.pos_resturant_app.services.specifications.OrdenService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -64,41 +65,29 @@ public class OrdenController {
         );
     }
 
-    @PutMapping
-    public ResponseEntity<MensajeDTO<Boolean>> editQuantityDetail ()
+
+    @GetMapping("/getOrdenes")
+    public ResponseEntity<OrdenResponseSet<OrdenReadDTO>> getOrdenes(
+            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int page,
+            @RequestParam(value = "pageSize", defaultValue = "0", required = false) int pageSize) {
+
+        var set = ordenService.getOrdenes(page, pageSize);
+        var totalOrdenRecords = ordenRepo.count();
+        //Convertir el set en un objetivo de tipo OrdenResponseSet
 
 
+        var ordenResponseSet = OrdenResponseSet.<OrdenReadDTO>builder()
+                .page(page)
+                .size(pageSize)
+                .totalElements(totalOrdenRecords)
+                .totalPages((int) totalOrdenRecords / pageSize)
+                .isLast(page == (int) totalOrdenRecords / pageSize)
+                .ordenes(set)
+                .build();
 
-    //Metodo para obtener todas las ordenes
-    //TODO Paginar las ordenes.
-    @GetMapping("/getAll")
-    public ResponseEntity<MensajeDTO<List<OrdenReadDTO>>> getAll() {
-        try {
-            List<OrdenReadDTO> dtoList = ordenRepo.findAll().stream()
-                    .map(orden -> new OrdenReadDTO(
-                            orden.getIdOrden(),
-                            orden.getFechaInicio(),
-                            orden.getSubtotal(),
-                            orden.getImpuestos(),
-                            orden.getMesa().getId(),
-                            orden.getMesero().getCedula(),
-                            orden.getEstado(),
-                            orden.getListaDetalles().stream()
-                                    .map(ordenPlato -> new PlatoOrdenadoDTO(
-                                            ordenPlato.getPlato().getNombre(),
-                                            ordenPlato.getCantidad(),
-                                            ordenPlato.getPlato().getPrecio() // Asegúrate que Plato tenga getPrecio()
-                                    )).toList()
-                    ))
-                    .toList();
-
-            return ResponseEntity.ok(new MensajeDTO<>(false, dtoList, "Órdenes obtenidas correctamente"));
-        } catch (Exception e) {
-            log.error("Error al obtener las órdenes: {}", e.getMessage());
-            return ResponseEntity.status(500)
-                    .body(new MensajeDTO<>(true, null, "Error al obtener las órdenes: " + e.getMessage()));
-        }
+        return ResponseEntity.status(200).body(ordenResponseSet);
     }
+
 
     @PutMapping("/cancelar/{idOrden}")
     public ResponseEntity<MensajeDTO<Boolean>> cancelarOrden(@PathVariable("idOrden") @NotNull Integer idOrden) {

@@ -24,5 +24,5 @@ public interface OrdenPlatoRepo extends JpaRepository<OrdenPlato, OrdenPlatoID> 
     OrdenPlato findByIdPlatoAndIdOrden(Integer idPlato, Integer idOrden);
 
     @Query ("SELECT op FROM OrdenPlato op WHERE op.id.idOrden = ?1")
-    List<OrdenPlato> findbyIdOrden(Integer idOrden);
+    List<OrdenPlato> findByIdOrden(Integer idOrden);
 }

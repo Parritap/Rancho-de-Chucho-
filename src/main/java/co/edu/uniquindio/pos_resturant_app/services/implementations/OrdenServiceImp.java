@@ -2,6 +2,7 @@ package co.edu.uniquindio.pos_resturant_app.services.implementations;
 
 import co.edu.uniquindio.pos_resturant_app.dto.joints.OrdenPlatoDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.orden.OrdenCreateDTO;
+import co.edu.uniquindio.pos_resturant_app.dto.orden.OrdenReadDTO;
 import co.edu.uniquindio.pos_resturant_app.exceptions.RecordNotFoundException;
 import co.edu.uniquindio.pos_resturant_app.model.Orden;
 import co.edu.uniquindio.pos_resturant_app.model.enums.EstadoOrden;
@@ -13,12 +14,15 @@ import co.edu.uniquindio.pos_resturant_app.repository.MeseroRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.OrdenRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.PlatoRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.joints.OrdenPlatoRepo;
+import co.edu.uniquindio.pos_resturant_app.response.OrdenResponseSet;
 import co.edu.uniquindio.pos_resturant_app.services.specifications.OrdenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -37,6 +41,7 @@ public class OrdenServiceImp implements OrdenService {
     private final OrdenRepo ordenRepo;
     private final PlatoRepo platoRepo;
     private final OrdenPlatoRepo ordenPlatoRepo;
+    private final OrdenService ordenService;
 
     /**
      * Este metodo crea una orden y la asocia a una mesa y un mesero y la guarda en la base de datos.
@@ -140,7 +145,7 @@ public class OrdenServiceImp implements OrdenService {
 
         entity.setFechaCierre(LocalDateTime.now());
 
-        var listaDetalles = ordenPlatoRepo.findbyIdOrden(entity.getIdOrden());
+        var listaDetalles = ordenPlatoRepo.findByIdOrden(entity.getIdOrden());
         var subtotal = calcularSubTotal(listaDetalles);
         var impuestos = calcularImpuestos(subtotal);
         entity.setSubtotal(subtotal);
@@ -150,6 +155,25 @@ public class OrdenServiceImp implements OrdenService {
         ordenRepo.save(entity);
 
         return true;
+    }
+
+    @Override
+    public List<OrdenReadDTO> getOrdenes(int page, int pageSize) {
+        PageRequest pageable = PageRequest.of(page, pageSize);
+        //Obtengo una fracción de las ordenes mediante la paginación
+        var listaOrdenes = ordenRepo.findAll(pageable).getContent();
+
+        //Cada orden tiene un detalle, y en el detalle, por producto, su cantidad.
+        Map<Orden, Integer> ordenCantidad = new HashMap<>();
+        Map<Orden, List<OrdenPlato>> mapaDetalles = new HashMap<>();
+
+        //Iteramos cada orden y obtenemos su registro de OrdenPlato
+        listaOrdenes.forEach(orden -> {
+            var detalles = ordenPlatoRepo.findByIdOrden(orden.getIdOrden());
+            mapaDetalles.put(orden, detalles);
+        });
+
+        return listaOrdenes.stream().map(orden -> OrdenReadDTO.toDTO(orden, mapaDetalles.get(orden))).toList();
     }
 
 

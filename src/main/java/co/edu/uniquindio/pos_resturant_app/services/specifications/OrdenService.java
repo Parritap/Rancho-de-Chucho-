@@ -2,6 +2,10 @@ package co.edu.uniquindio.pos_resturant_app.services.specifications;
 
 import co.edu.uniquindio.pos_resturant_app.dto.joints.OrdenPlatoDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.orden.OrdenCreateDTO;
+import co.edu.uniquindio.pos_resturant_app.dto.orden.OrdenReadDTO;
+import co.edu.uniquindio.pos_resturant_app.response.OrdenResponseSet;
+
+import java.util.List;
 
 public interface OrdenService {
 
@@ -10,4 +14,6 @@ public interface OrdenService {
     Boolean closeOrden (Integer idOrden);
 
     Boolean editQuantityDetail (OrdenPlatoDTO ordenPlatoDTO);
+
+    List<OrdenReadDTO> getOrdenes (int page, int pageSize );
 }
