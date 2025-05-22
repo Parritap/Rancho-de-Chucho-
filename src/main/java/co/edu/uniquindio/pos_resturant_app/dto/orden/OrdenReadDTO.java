@@ -31,10 +31,12 @@ public record OrdenReadDTO(
                 orden.getMesa().getId(),
                 orden.getMesero().getCedula(),
                 orden.getEstado(),
-                platos.stream().map(op ->
-                        new PlatoOrdenadoDTO(
-                          
-                        )).collect(Collectors.toList())
+                platos.stream()
+                        .map(op -> new PlatoOrdenadoDTO(
+                                op.getPlato().getNombre(),
+                                op.getId().getIdPlato(),
+                                op.getCantidad()))
+                        .collect(Collectors.toList())
         );
     }
 }

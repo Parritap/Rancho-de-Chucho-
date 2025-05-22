@@ -65,7 +65,9 @@ public class OrdenController {
         );
     }
 
-
+// Ejemplo de una petición :
+    //  http://host:port/api/orden/getOrdenes?pageNo=0&pageSize=10
+    //OJOOOOOO : La indexación de la página empieza en 0.
     @GetMapping("/getOrdenes")
     public ResponseEntity<OrdenResponseSet<OrdenReadDTO>> getOrdenes(
             @RequestParam(value = "pageNo", defaultValue = "0", required = false) int page,
@@ -74,7 +76,6 @@ public class OrdenController {
         var set = ordenService.getOrdenes(page, pageSize);
         var totalOrdenRecords = ordenRepo.count();
         //Convertir el set en un objetivo de tipo OrdenResponseSet
-
 
         var ordenResponseSet = OrdenResponseSet.<OrdenReadDTO>builder()
                 .page(page)

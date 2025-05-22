@@ -41,7 +41,6 @@ public class OrdenServiceImp implements OrdenService {
     private final OrdenRepo ordenRepo;
     private final PlatoRepo platoRepo;
     private final OrdenPlatoRepo ordenPlatoRepo;
-    private final OrdenService ordenService;
 
     /**
      * Este metodo crea una orden y la asocia a una mesa y un mesero y la guarda en la base de datos.
