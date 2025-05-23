@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 public interface IngredientePlatoRepo extends JpaRepository<IngredientePlato, IngredientePlatoID> {
 
@@ -20,4 +22,10 @@ public interface IngredientePlatoRepo extends JpaRepository<IngredientePlato, In
 
     @Query("SELECT COUNT(ip) > 0 FROM IngredientePlato ip WHERE ip.ingrediente.id = :ingredienteId")
     boolean existsByIngredienteId(@Param("ingredienteId") int ingredienteId);
+
+
+    //  @Query ("SELECT ip FROM IngredientePlato ip WHERE IngredientePlato.id.idPlato = ?1 ")
+    //  List<IngredientePlato> getIngredientesByPlato(TipoPlato tipoPlato);
+    @Query ("SELECT ip FROM IngredientePlato ip WHERE ip.id.idPlato = ?1")
+    List<IngredientePlato> findByPlatoId(Integer ingredienteId);
 }

@@ -1,6 +1,8 @@
 package co.edu.uniquindio.pos_resturant_app.services.implementations;
 
+import co.edu.uniquindio.pos_resturant_app.dto.ingrediente.IngredienteDetailDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.joints.IngredienteAtom;
+import co.edu.uniquindio.pos_resturant_app.dto.joints.IngredientesPlatoDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.plato.PlatoCreateDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.plato.PlatoReadDTO;
 import co.edu.uniquindio.pos_resturant_app.exceptions.CascadeEffectException;
@@ -163,5 +165,16 @@ public class PlatoServiceImp implements PlatoService {
         } else {
             throw new RecordNotFoundException("PLATO con ID: " + id);
         }
+    }
+
+    @Override
+    public IngredientesPlatoDTO getIngredientes(Integer idPlato) {
+        var ingredientes = ingredientePlatoRepo.findByPlatoId(idPlato);
+        var listaDetalles = ingredientes.stream().map(e ->
+                new IngredienteDetailDTO(
+                        e.getPlato().getId_plato(),
+                        e.getPlato().getNombre())
+        ).toList();
+        return new IngredientesPlatoDTO(listaDetalles);
     }
 }

@@ -2,7 +2,6 @@ package co.edu.uniquindio.pos_resturant_app.controllers;
 
 import co.edu.uniquindio.pos_resturant_app.dto.orden.OrdenCreateDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.orden.OrdenReadDTO;
-import co.edu.uniquindio.pos_resturant_app.dto.orden.PlatoOrdenadoDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.web.MensajeDTO;
 import co.edu.uniquindio.pos_resturant_app.model.Orden;
 import co.edu.uniquindio.pos_resturant_app.model.enums.EstadoOrden;
@@ -56,7 +55,7 @@ public class OrdenController {
     }
 
 
-    @GetMapping("/orden/cerrar/{idOrden}")
+    @PutMapping("/orden/cerrar/{idOrden}")
     public ResponseEntity<MensajeDTO<Boolean>> close(@PathVariable("idOrden") @NotNull Integer idOrden) {
         log.info("Cerrando la orden con ID {}", idOrden);
         ordenService.closeOrden(idOrden);
@@ -65,7 +64,7 @@ public class OrdenController {
         );
     }
 
-// Ejemplo de una petición :
+    // Ejemplo de una petición :
     //  http://host:port/api/orden/getOrdenes?pageNo=0&pageSize=10
     //OJOOOOOO : La indexación de la página empieza en 0.
     @GetMapping("/getOrdenes")
@@ -89,6 +88,10 @@ public class OrdenController {
         return ResponseEntity.status(200).body(ordenResponseSet);
     }
 
+
+    public boolean editEstadoOrden(Integer idOrden, EstadoOrden estado) {
+        return ordenService.editEstadoOrden(idOrden, estado);
+    }
 
     @PutMapping("/cancelar/{idOrden}")
     public ResponseEntity<MensajeDTO<Boolean>> cancelarOrden(@PathVariable("idOrden") @NotNull Integer idOrden) {

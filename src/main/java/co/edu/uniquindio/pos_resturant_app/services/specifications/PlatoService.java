@@ -1,5 +1,6 @@
 package co.edu.uniquindio.pos_resturant_app.services.specifications;
 
+import co.edu.uniquindio.pos_resturant_app.dto.joints.IngredientesPlatoDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.plato.PlatoCreateDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.plato.PlatoReadDTO;
 import co.edu.uniquindio.pos_resturant_app.exceptions.CascadeEffectException;
@@ -69,4 +70,6 @@ public interface PlatoService {
      * @throws Exception               For other errors
      */
     boolean cambiarEstado(Integer id, boolean disponible) throws RecordNotFoundException, Exception;
+
+    IngredientesPlatoDTO getIngredientes(Integer id) throws RecordNotFoundException, Exception;
 }

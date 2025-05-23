@@ -16,6 +16,7 @@ import co.edu.uniquindio.pos_resturant_app.repository.PlatoRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.joints.OrdenPlatoRepo;
 import co.edu.uniquindio.pos_resturant_app.response.OrdenResponseSet;
 import co.edu.uniquindio.pos_resturant_app.services.specifications.OrdenService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -44,6 +45,7 @@ public class OrdenServiceImp implements OrdenService {
 
     /**
      * Este metodo crea una orden y la asocia a una mesa y un mesero y la guarda en la base de datos.
+     * La orden se crea en estado ESPERA.
      *
      * @param idMesa
      * @param cedulaMesero
@@ -69,7 +71,7 @@ public class OrdenServiceImp implements OrdenService {
 
 
     /**
-     * Función que abre una orden
+     * Función que abre una orden con estado
      * DETALLE es un registro de la tabla orden_plato.
      * La tabla que estamos afectando aquí es Orden (creación) y OrdenPlato mediante
      * la adición de un nuevo registro que relaciona a la orden
@@ -115,7 +117,7 @@ public class OrdenServiceImp implements OrdenService {
      * @return
      */
     @Override
-    public Boolean editQuantityDetail(OrdenPlatoDTO dto) {
+    public boolean editQuantityDetail(OrdenPlatoDTO dto) {
         //lets check if dto.orden and dto.plato do exist in the database
         var ordenEntity = ordenRepo.findById(dto.idOrden()).orElseThrow(
                 () -> new RecordNotFoundException("Orden con id:" + dto.idOrden() + " no encontrado"));
@@ -173,6 +175,13 @@ public class OrdenServiceImp implements OrdenService {
         });
 
         return listaOrdenes.stream().map(orden -> OrdenReadDTO.toDTO(orden, mapaDetalles.get(orden))).toList();
+    }
+
+    public boolean editEstadoOrden(Integer idOrden, EstadoOrden estado) {
+        var entity = ordenRepo.findById(idOrden).orElseThrow(() ->
+                new EntityNotFoundException("No existe el orden con ID " + idOrden));
+        entity.setEstado(estado);
+        return true;
     }
 
 

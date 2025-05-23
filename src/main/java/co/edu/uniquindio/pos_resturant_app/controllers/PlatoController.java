@@ -1,5 +1,6 @@
 package co.edu.uniquindio.pos_resturant_app.controllers;
 
+import co.edu.uniquindio.pos_resturant_app.dto.joints.IngredientesPlatoDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.plato.PlatoCreateDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.plato.PlatoReadDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.web.MensajeDTO;
@@ -9,7 +10,6 @@ import co.edu.uniquindio.pos_resturant_app.services.specifications.PlatoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +32,7 @@ public class PlatoController {
         }
         Integer id = -1;
         try {
-           id = platoService.create(dto);
+            id = platoService.create(dto);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -93,6 +93,12 @@ public class PlatoController {
             return ResponseEntity.status(500)
                     .body(new MensajeDTO<>(true, null));
         }
+    }
+
+    @GetMapping("{id}/getIngredientes")
+    public ResponseEntity<MensajeDTO<IngredientesPlatoDTO>> getIngredientes(@PathVariable Integer id) throws Exception {
+        var listaIngredientes = platoService.getIngredientes(id);
+        return ResponseEntity.ok(new MensajeDTO<>(false, listaIngredientes));
     }
 
 }
