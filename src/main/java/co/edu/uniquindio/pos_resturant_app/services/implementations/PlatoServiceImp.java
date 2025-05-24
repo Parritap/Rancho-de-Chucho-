@@ -52,6 +52,7 @@ public class PlatoServiceImp implements PlatoService {
         // Agregamos el plato a la basede datos para luego hacer la relación en la tabla IngredientePlato
         Plato plato = dto.toEntity();
         plato.setTipoPlato(tipoPlatoRepo.findById(dto.id_tipo_plato()).get());
+        plato.setActivo(true);
         var platoEntity = platoRepo.save(plato);
 
         // Por cada IngredienteAtom encontrado en el PlatoCreateDTO agregamos la relación en IngredientePlato

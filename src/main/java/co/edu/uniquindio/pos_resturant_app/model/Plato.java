@@ -38,8 +38,8 @@ public class Plato implements Serializable {
             nullable = false)
     private TipoPlato tipoPlato;
 
-    @Column
-    private boolean activo;
+    @Column(columnDefinition = "boolean default true")
+    private boolean activo = true;
 
 
     public PlatoReadDTO toReadDTO() {

@@ -25,17 +25,9 @@ public class PlatoController {
     private final TipoPlatoRepo tipoPlatoRepo;
 
     @PostMapping("/save")
-    public ResponseEntity<MensajeDTO<Integer>> create(@Valid @RequestBody PlatoCreateDTO dto) throws RecordNotFoundException {
-
-        if (tipoPlatoRepo.findById(dto.id_tipo_plato()).isEmpty()) {
-            throw new RecordNotFoundException("Tipo plato con ID" + dto.id_tipo_plato() + " no encontrado");
-        }
+    public ResponseEntity<MensajeDTO<Integer>> create(@Valid @RequestBody PlatoCreateDTO dto) throws RecordNotFoundException, Exception {
         Integer id = -1;
-        try {
-            id = platoService.create(dto);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
+        id = platoService.create(dto);
         return ResponseEntity.ok(new MensajeDTO<>(false, id));
     }
 
