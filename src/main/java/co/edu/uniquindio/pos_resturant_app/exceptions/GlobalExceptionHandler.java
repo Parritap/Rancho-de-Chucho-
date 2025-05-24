@@ -2,6 +2,7 @@ package co.edu.uniquindio.pos_resturant_app.exceptions;
 
 import co.edu.uniquindio.pos_resturant_app.dto.ErrorResponseDTO;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.annotation.Experimental;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,18 +18,14 @@ import java.util.Map;
 
 import jakarta.persistence.EntityNotFoundException;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
-
-
 
     @ExceptionHandler(value = {EntityNotFoundException.class})
     public ResponseEntity<ErrorResponse> handleEntityNotFoundException(
             RecordNotFoundException ex, HttpServletRequest request) {
-
+        log.error(ex.getMessage());
         ErrorResponse error = ErrorResponse.builder().
                 errorCode(ERROR_CODE.ENTITY_NOT_FOUND.value()).
                 message(ex.getMessage()).
@@ -42,6 +39,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleRecordNotFoundException(
             RecordNotFoundException ex, HttpServletRequest request) {
 
+        log.error(ex.getMessage());
         ErrorResponse error = ErrorResponse.builder().
                 errorCode(ERROR_CODE.ENTITY_NOT_FOUND.value()).
                 message(ex.getMessage()).
@@ -55,12 +53,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleDuplicatedRecordException(
             DuplicatedRecordException ex) {
 
+        log.error(ex.getMessage());
         ErrorResponse error = ErrorResponse.builder().
                 errorCode(ERROR_CODE.DUPLICATE_RECORD.value()).
                 message(ex.getMessage()).
                 timestamp(LocalDateTime.now()).
                 build();
-
 
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
@@ -78,6 +76,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(
             MethodArgumentNotValidException ex, HttpServletRequest request) {
 
+        log.error(ex.getMessage());
         Map<String, Object> response = new HashMap<>();
         Map<String, String> errors = new HashMap<>();
 
@@ -98,6 +97,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDTO> handleGlobalException(
             Exception ex, HttpServletRequest request) {
 
+        log.error(ex.getMessage());
         ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
@@ -106,6 +106,21 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
 
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponseDTO> handleCascadeEffectException (
+            CascadeEffectException ex, HttpServletRequest request
+    ){
+        log.error(ex.getMessage());
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                LocalDateTime.now(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Internal Server Error, Exception",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

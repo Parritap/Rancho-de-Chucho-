@@ -114,8 +114,6 @@ class IngredienteServiceImpTest {
     }
 
 
-
-
     @Test
     void update_Success() throws Exception {
         // Arrange
@@ -132,7 +130,6 @@ class IngredienteServiceImpTest {
         verify(unidadMedidaRepo).findById("kg");
         verify(ingredienteRepo).save(any(Ingrediente.class));
     }
-
 
 
     @Test
@@ -152,7 +149,7 @@ class IngredienteServiceImpTest {
 
 
     @Test
-    void getAll_Success() throws Exception {
+    void getAll_Success() {
         // Arrange
         List<Ingrediente> ingredientesList = List.of(ingrediente);
         when(ingredienteRepo.findAll()).thenReturn(ingredientesList);
@@ -168,7 +165,7 @@ class IngredienteServiceImpTest {
     }
 
     @Test
-    void getAll_EmptyList() throws Exception {
+    void getAll_EmptyList() {
         // Arrange
         when(ingredienteRepo.findAll()).thenReturn(new ArrayList<>());
 

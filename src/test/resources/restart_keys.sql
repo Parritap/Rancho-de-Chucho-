@@ -34,8 +34,8 @@ FROM public.orden;
 
 -- Reset sequence for public.mesa.id_mesa
 SELECT setval(
-               pg_get_serial_sequence('public.mesa', 'id_mesa'),
-               COALESCE(MAX(id_mesa), 0) + 1,
+               pg_get_serial_sequence('public.mesa', 'id'),
+               COALESCE(MAX(id), 0) + 1,
                false
        )
 FROM public.mesa;

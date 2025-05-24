@@ -88,7 +88,7 @@ public class IngredienteServiceImp implements IngredienteService {
     }
 
     @Override
-    public List<IngredienteReadDTO> getAll() throws Exception {
+    public List<IngredienteReadDTO> getAll() {
         return ingredienteRepo.findAll().stream()
                 .map(IngredienteReadDTO::new)
                 .toList();

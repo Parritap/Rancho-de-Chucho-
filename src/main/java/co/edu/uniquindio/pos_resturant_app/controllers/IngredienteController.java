@@ -12,6 +12,7 @@ import co.edu.uniquindio.pos_resturant_app.services.specifications.IngredienteSe
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.hc.client5.http.classic.ExecChain;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -79,22 +80,9 @@ public class IngredienteController {
     // editProduct()
     // # Mapea la funcion IntentoryService.editProduct() en el front end
     @PutMapping("/{id}/update")
-    public ResponseEntity<MensajeDTO<Boolean>> update(@PathVariable int id, @Valid @RequestBody IngredienteCreateDTO dto) {
-        try {
-            boolean updated = ingredienteService.update(dto, id);
-            if (updated) {
-                return ResponseEntity.ok(new MensajeDTO<>(true, false));
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (RecordNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new MensajeDTO<>(false, false));
-        } catch (Exception e) {
-            log.error("Error inesperado actualizando ingrediente: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new MensajeDTO<>(false, false));
-        }
+    public ResponseEntity<MensajeDTO<Boolean>> update(@PathVariable int id, @Valid @RequestBody IngredienteCreateDTO dto) throws Exception {
+        boolean updated = ingredienteService.update(dto, id);
+        return ResponseEntity.ok(new MensajeDTO<>(true, false));
     }
 
     /**
@@ -106,45 +94,21 @@ public class IngredienteController {
      * @throws CascadeEffectException  if the ingredient is used in any recipe
      */
     @DeleteMapping("/{id}/delete")
-    public ResponseEntity<MensajeDTO<Boolean>> delete(@PathVariable Integer id) {
-        try {
-            boolean deleted = ingredienteService.delete(id);
-            return ResponseEntity.ok(new MensajeDTO<>(true, true));
-        } catch (RecordNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new MensajeDTO<>(false, false));
-        } catch (CascadeEffectException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new MensajeDTO<>(false, false));
-        } catch (Exception e) {
-            log.error("Error inesperado eliminando ingrediente: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new MensajeDTO<>(false, false));
-        }
+    public ResponseEntity<MensajeDTO<Boolean>> delete(@PathVariable Integer id) throws Exception {
+        ingredienteService.delete(id);
+        return ResponseEntity.ok(new MensajeDTO<>(true, true));
     }
 
     @GetMapping("/getAll")
     public ResponseEntity<MensajeDTO<List<IngredienteReadDTO>>> getAll() {
-        try {
-            var ingredientes = ingredienteService.getAll();
-            return ResponseEntity.ok().body(new MensajeDTO<>(false, ingredientes));
-        } catch (Exception e) {
-            log.error("Error inesperado obteniendo ingredientes: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new MensajeDTO<>(true, null));
-        }
+        var ingredientes = ingredienteService.getAll();
+        return ResponseEntity.ok().body(new MensajeDTO<>(false, ingredientes));
     }
 
     @GetMapping("/getUnidadMedida")
     public ResponseEntity<MensajeDTO<List<UnidadMedida>>> getAllUnidaddes() {
-        try {
-            var unidades = unidadMedidaRepo.findAll().stream().map(UnidadMedida::toUnidadMedida).toList();
-            return ResponseEntity.ok().body(new MensajeDTO<>(false, unidades));
-        } catch (Exception e) {
-            log.error("Error inesperado obteniendo ingredientes: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new MensajeDTO<>(true, null));
-        }
+        var unidades = unidadMedidaRepo.findAll().stream().map(UnidadMedida::toUnidadMedida).toList();
+        return ResponseEntity.ok().body(new MensajeDTO<>(false, unidades));
     }
 }
 

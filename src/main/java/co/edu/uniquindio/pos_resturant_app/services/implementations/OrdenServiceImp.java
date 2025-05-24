@@ -3,6 +3,7 @@ package co.edu.uniquindio.pos_resturant_app.services.implementations;
 import co.edu.uniquindio.pos_resturant_app.dto.joints.OrdenPlatoDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.orden.OrdenCreateDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.orden.OrdenReadDTO;
+import co.edu.uniquindio.pos_resturant_app.exceptions.NotAValidStateException;
 import co.edu.uniquindio.pos_resturant_app.exceptions.RecordNotFoundException;
 import co.edu.uniquindio.pos_resturant_app.model.Orden;
 import co.edu.uniquindio.pos_resturant_app.model.enums.EstadoOrden;
@@ -14,12 +15,12 @@ import co.edu.uniquindio.pos_resturant_app.repository.MeseroRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.OrdenRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.PlatoRepo;
 import co.edu.uniquindio.pos_resturant_app.repository.joints.OrdenPlatoRepo;
-import co.edu.uniquindio.pos_resturant_app.response.OrdenResponseSet;
 import co.edu.uniquindio.pos_resturant_app.services.specifications.OrdenService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.actuate.env.EnvironmentEndpoint;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +35,7 @@ import java.time.LocalDateTime;
  * IMPORTANTE: En el contexto de esta clase DETALLE se refiere a la relacion entre orden y plato.
  * Es decir, detalle es un registro de la tabla orden_plato.
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrdenServiceImp implements OrdenService {
@@ -42,6 +44,7 @@ public class OrdenServiceImp implements OrdenService {
     private final OrdenRepo ordenRepo;
     private final PlatoRepo platoRepo;
     private final OrdenPlatoRepo ordenPlatoRepo;
+    private final EnvironmentEndpoint environmentEndpoint;
 
     /**
      * Este metodo crea una orden y la asocia a una mesa y un mesero y la guarda en la base de datos.
@@ -112,9 +115,11 @@ public class OrdenServiceImp implements OrdenService {
 
     /**
      * Edita un detalle de la orden según el idPlato
+     * Este método lo que hace es sobreescribir un detalle existente de una orden en especifico
+     * Debe usarse cuando se cambie la cantidad de un plato.
      *
-     * @param dto
-     * @return
+     * @param dto contiene el id de la orden, el id del plato y la nueva cantidad del mismo.
+     * @return true, excepción de lo contrario.
      */
     @Override
     public boolean editQuantityDetail(OrdenPlatoDTO dto) {
@@ -149,6 +154,7 @@ public class OrdenServiceImp implements OrdenService {
         var listaDetalles = ordenPlatoRepo.findByIdOrden(entity.getIdOrden());
         var subtotal = calcularSubTotal(listaDetalles);
         var impuestos = calcularImpuestos(subtotal);
+        entity.setEstado(EstadoOrden.FINALIZADA);
         entity.setSubtotal(subtotal);
         entity.setImpuestos(impuestos);
         entity.setTotal(subtotal.add(impuestos));
@@ -177,13 +183,19 @@ public class OrdenServiceImp implements OrdenService {
         return listaOrdenes.stream().map(orden -> OrdenReadDTO.toDTO(orden, mapaDetalles.get(orden))).toList();
     }
 
-    public boolean editEstadoOrden(Integer idOrden, EstadoOrden estado) {
+    @Override
+    public boolean editEstadoOrden(Integer idOrden, EstadoOrden newEstado) {
+        log.info("Editando estado orden: " + idOrden);
         var entity = ordenRepo.findById(idOrden).orElseThrow(() ->
                 new EntityNotFoundException("No existe el orden con ID " + idOrden));
-        entity.setEstado(estado);
+
+        var estadoActual = entity.getEstado();
+        if (estadoActual == EstadoOrden.FINALIZADA || estadoActual == EstadoOrden.CANCELADA) {
+            throw new NotAValidStateException("Estado " + newEstado + " no valido para orden con estado " + estadoActual);
+        }
+        entity.setEstado(newEstado);
         return true;
     }
-
 
     private BigDecimal calcularSubTotal(List<OrdenPlato> listaDetalles) {
         // Calculate subtotal using streams instead of modifying a variable in lambda

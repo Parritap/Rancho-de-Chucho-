@@ -24,7 +24,7 @@ public interface IngredienteService {
     IngredienteCreateDTO findById(String id) throws RecordNotFoundException;
 
     //make a get all method to retrieve all the ingredients
-    List<IngredienteReadDTO> getAll() throws Exception;
+    List<IngredienteReadDTO> getAll();
 
 
     //Todo cambiar nombre en el front

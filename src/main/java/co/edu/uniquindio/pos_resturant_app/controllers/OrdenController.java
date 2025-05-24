@@ -3,6 +3,7 @@ package co.edu.uniquindio.pos_resturant_app.controllers;
 import co.edu.uniquindio.pos_resturant_app.dto.orden.OrdenCreateDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.orden.OrdenReadDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.web.MensajeDTO;
+import co.edu.uniquindio.pos_resturant_app.exceptions.NotAValidStateException;
 import co.edu.uniquindio.pos_resturant_app.model.Orden;
 import co.edu.uniquindio.pos_resturant_app.model.enums.EstadoOrden;
 import co.edu.uniquindio.pos_resturant_app.repository.MesaRepo;
@@ -54,7 +55,12 @@ public class OrdenController {
         );
     }
 
-
+    /**
+     * Al cerrar la orden, su estado será FINALIZADA
+     *
+     * @param idOrden
+     * @return
+     */
     @PutMapping("/orden/cerrar/{idOrden}")
     public ResponseEntity<MensajeDTO<Boolean>> close(@PathVariable("idOrden") @NotNull Integer idOrden) {
         log.info("Cerrando la orden con ID {}", idOrden);
@@ -101,10 +107,8 @@ public class OrdenController {
             var ordenOpt = ordenRepo.findById(idOrden);
             if (ordenOpt.isEmpty()) {
                 log.error("No se encontró la orden con ID {}", idOrden);
-                return ResponseEntity.badRequest()
-                        .body(new MensajeDTO<>(true, false, "No existe la orden especificada"));
+                return ResponseEntity.badRequest().body(new MensajeDTO<>(true, false, "No existe la orden especificada"));
             }
-
             Orden orden = ordenOpt.get();
 
             if (orden.getEstado() == EstadoOrden.FINALIZADA || orden.getEstado() == EstadoOrden.CANCELADA) {
@@ -127,5 +131,21 @@ public class OrdenController {
         }
     }
 
+    /**
+     * Cambia el estado de una orden. La orden no debe tener finalizada o cancelada.
+     *
+     * @param estado Nuevo estado
+     * @param id     Id de la orden
+     * @return
+     * @throws NotAValidStateException en caso de que la orden tenga estado FINALIZADA o CANCELADA
+     */
+    @PostMapping("/cambiarEstado/{id}/{estado}")
+    public ResponseEntity<MensajeDTO<Boolean>> cambiarEstado(
+            @PathVariable("estado") @NotNull String estado,
+            @PathVariable("id") @NotNull Integer id) throws NotAValidStateException {
+        log.info("Cambiando estado {}", estado);
+        ordenService.editEstadoOrden(id, EstadoOrden.getEstado(estado));
+        return ResponseEntity.ok(new MensajeDTO<>(false, true, "Estado cambiado correctamente"));
+    }
 
 }
