@@ -172,8 +172,8 @@ public class PlatoServiceImp implements PlatoService {
         var ingredientes = ingredientePlatoRepo.findByPlatoId(idPlato);
         var listaDetalles = ingredientes.stream().map(e ->
                 new IngredienteDetailDTO(
-                        e.getPlato().getId_plato(),
-                        e.getPlato().getNombre())
+                        e.getIngrediente().getId(),
+                        e.getIngrediente().getNombre())
         ).toList();
         return new IngredientesPlatoDTO(listaDetalles);
     }
