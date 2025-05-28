@@ -2,6 +2,7 @@ package co.edu.uniquindio.pos_resturant_app.controllers;
 
 import co.edu.uniquindio.pos_resturant_app.dto.orden.OrdenCreateDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.orden.OrdenReadDTO;
+import co.edu.uniquindio.pos_resturant_app.dto.orden.PlatoOrdenadoDTO;
 import co.edu.uniquindio.pos_resturant_app.dto.web.MensajeDTO;
 import co.edu.uniquindio.pos_resturant_app.exceptions.NotAValidStateException;
 import co.edu.uniquindio.pos_resturant_app.model.Orden;
@@ -31,11 +32,6 @@ import java.util.List;
 @Slf4j
 public class OrdenController {
     private final OrdenRepo ordenRepo;
-    private final MesaRepo mesaRepo;
-    private final MeseroRepo meseroRepo;
-    private final OrdenPlatoRepo ordenPlatoRepo;
-    private final PlatoRepo platoRepo;
-
     private final OrdenService ordenService;
 
     /**
@@ -146,6 +142,37 @@ public class OrdenController {
         log.info("Cambiando estado {}", estado);
         ordenService.editEstadoOrden(id, EstadoOrden.getEstado(estado));
         return ResponseEntity.ok(new MensajeDTO<>(false, true, "Estado cambiado correctamente"));
+    }
+
+    //Metodo para obtener todas las ordenes
+    //TODO Paginar las ordenes.
+    @GetMapping("/getAll")
+    public ResponseEntity<MensajeDTO<List<OrdenReadDTO>>> getAll() {
+        try {
+            List<OrdenReadDTO> dtoList = ordenRepo.findAll().stream()
+                    .map(orden -> new OrdenReadDTO(
+                            orden.getIdOrden(),
+                            orden.getFechaInicio(),
+                            orden.getSubtotal(),
+                            orden.getImpuestos(),
+                            orden.getMesa().getId(),
+                            orden.getMesero().getCedula(),
+                            orden.getEstado(),
+                            orden.getListaDetalles().stream()
+                                    .map(ordenPlato -> new PlatoOrdenadoDTO(
+                                            ordenPlato.getPlato().getNombre(),
+                                            ordenPlato.getCantidad(),
+                                            ordenPlato.getPlato().getPrecio() // Asegúrate que Plato tenga getPrecio()
+                                    )).toList()
+                    ))
+                    .toList();
+
+            return ResponseEntity.ok(new MensajeDTO<>(false, dtoList, "Órdenes obtenidas correctamente"));
+        } catch (Exception e) {
+            log.error("Error al obtener las órdenes: {}", e.getMessage());
+            return ResponseEntity.status(500)
+                    .body(new MensajeDTO<>(true, null, "Error al obtener las órdenes: " + e.getMessage()));
+        }
     }
 
 }

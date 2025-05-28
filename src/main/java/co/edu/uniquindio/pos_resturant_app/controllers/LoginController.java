@@ -21,7 +21,6 @@ public class LoginController {
 
     private final MeseroRepo meseroRepo;
     private final CocineroRepo cocineroRepo;
-    private final FormattingConversionService mvcConversionService;
 
     @PostMapping("/mesero")
     public ResponseEntity<MensajeDTO<UsuarioReadDTO>> loginMesero(@Valid @RequestBody LoginDTO dto) {
