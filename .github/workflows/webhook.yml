@@ -22,3 +22,4 @@ jobs:
           webhook_url: "http://45.55.149.182:5000/webhook"
           webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
           webhook_headers: '{"X-Webhook-Secret": "${{ secrets.WEBHOOK_SECRET }}"}'
+
