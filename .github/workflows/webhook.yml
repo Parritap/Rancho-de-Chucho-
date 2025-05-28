@@ -3,7 +3,7 @@ name: Call Webhook on Push
 on:
   push:
     branches:
-      - master # Or your desired branch
+      - master
 
 jobs:
   call_webhook:
@@ -11,26 +11,14 @@ jobs:
     steps:
       - name: Call Webhook Server
         uses: distributhor/workflow-webhook@v3
-        env:
-          # Your server's public URL
-          webhook_url: "http://45.55.149.182:5000/webhook"
-
-          # Use a GitHub secret for your webhook token
-          # Store this secret in your repo: Settings > Secrets and variables > Actions
-          webhook_secret_value: ${{ secrets.WEBHOOK_SECRET }}
-
-          # Send data (optional, but good to send something)
-          webhook_data: '{ "repository": "${{ github.repository }}", "ref": "${{ github.ref }}" }'
-
-          # CRITICAL: Define custom headers here.
-          # We set Content-Type and our custom secret header.
-          webhook_headers: |
-            {
-              "Content-Type": "application/json",
-              "X-Webhook-Secret": "${{ env.webhook_secret_value }}"
-            }
-
         with:
-          webhook_url: ${{ env.webhook_url }}
+          webhook_url: "http://45.55.149.182:5000/webhook"
           webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
-          data: ${{ env.webhook_data }}
+          data: '{ "repository": "${{ github.repository }}", "ref": "${{ github.ref }}" }'
+          webhook_type: json
+          verbose: true
+          content_type: application/json
+        env:
+          webhook_url: "http://45.55.149.182:5000/webhook"
+          webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
+          webhook_headers: '{"X-Webhook-Secret": "${{ secrets.WEBHOOK_SECRET }}"}'
