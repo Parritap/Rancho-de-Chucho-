@@ -1,0 +1,31 @@
+name: Call Webhook on Push
+
+on:
+  push:
+    branches:
+      - main # Or your desired branch
+
+jobs:
+  call_webhook:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Webhook Server
+        uses: distributhor/workflow-webhook@v3
+        env:
+          # Your server's public URL
+          webhook_url: "http://your_public_ip_or_domain:5000/webhook"
+
+          # Use a GitHub secret for your webhook token
+          # Store this secret in your repo: Settings > Secrets and variables > Actions
+          webhook_secret_value: ${{ secrets.WEBHOOK_SECRET }} #holamundo
+
+          # Send data (optional, but good to send something)
+          webhook_data: '{ "repository": "${{ github.repository }}", "ref": "${{ github.ref }}" }'
+
+          # CRITICAL: Define custom headers here.
+          # We set Content-Type and our custom secret header.
+          webhook_headers: |
+            {
+              "Content-Type": "application/json",
+              "X-Webhook-Secret": "${{ env.webhook_secret_value }}"
+            }
