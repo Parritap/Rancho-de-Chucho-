@@ -3,7 +3,7 @@ name: Call Webhook on Push
 on:
   push:
     branches:
-      - main # Or your desired branch
+      - master # Or your desired branch
 
 jobs:
   call_webhook:
