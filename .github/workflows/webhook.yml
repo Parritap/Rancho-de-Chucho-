@@ -29,3 +29,6 @@ jobs:
               "Content-Type": "application/json",
               "X-Webhook-Secret": "${{ env.webhook_secret_value }}"
             }
+
+        with:
+          webhook_url: 'http://45.55.149.182:5000/webhook'
