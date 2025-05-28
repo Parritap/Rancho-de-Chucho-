@@ -17,7 +17,7 @@ jobs:
 
           # Use a GitHub secret for your webhook token
           # Store this secret in your repo: Settings > Secrets and variables > Actions
-          webhook_secret_value: ${{ secrets.WEBHOOK_SECRET }} #holamundo
+          webhook_secret_value: ${{ secrets.WEBHOOK_SECRET }}
 
           # Send data (optional, but good to send something)
           webhook_data: '{ "repository": "${{ github.repository }}", "ref": "${{ github.ref }}" }'
@@ -31,4 +31,6 @@ jobs:
             }
 
         with:
-          webhook_url: 'http://45.55.149.182:5000/webhook'
+          webhook_url: ${{ env.webhook_url }}
+          webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
+          data: ${{ env.webhook_data }}
